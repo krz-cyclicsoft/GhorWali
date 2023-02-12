@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1009775344988",
+    "project_id": "ghorwali",
+    "storage_bucket": "ghorwali.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1009775344988:android:88a6a87e653cf2a2191599",
+        "android_client_info": {
+          "package_name": "com.cyclicsoft.ghorwali"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1009775344988-ul8ll4advd33p1pkf3tkrj209tnlft01.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAalzQVBqlSEfnpC-hjScvejmx89lh99hQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1009775344988-ul8ll4advd33p1pkf3tkrj209tnlft01.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
