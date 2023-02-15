@@ -1,4 +1,4 @@
-package com.sixamtech.stack_food
+package com.cyclicsoft.ghorwali
 
 import io.flutter.embedding.android.FlutterActivity
 
