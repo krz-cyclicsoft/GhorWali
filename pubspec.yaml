@@ -51,7 +51,6 @@ dependencies:
   expandable_bottom_sheet: ^1.1.1+1
   uni_links: ^0.5.1
   modal_bottom_sheet:
-  change_app_package_name: ^1.1.0
 
 dependency_overrides:
   modal_bottom_sheet:
