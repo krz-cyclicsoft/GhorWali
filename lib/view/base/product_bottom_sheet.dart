@@ -359,7 +359,7 @@ class _ProductBottomSheetState extends State<ProductBottomSheet> {
                           alignment: Alignment.center,
                           margin: EdgeInsets.only(bottom: productController.addOnActiveList[index] ? 2 : 20),
                           decoration: BoxDecoration(
-                            color: productController.addOnActiveList[index] ? Theme.of(context).primaryColor : Theme.of(context).backgroundColor,
+                            color: productController.addOnActiveList[index] ? Theme.of(context).primaryColor : Theme.of(context).colorScheme.background,
                             borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
                             border: productController.addOnActiveList[index] ? null : Border.all(color: Theme.of(context).disabledColor, width: 2),
                             boxShadow: productController.addOnActiveList[index]

@@ -99,7 +99,7 @@ class ProductWidget extends StatelessWidget {
                     image: '${isCampaign ? _baseUrls.campaignImageUrl : isRestaurant ? _baseUrls.restaurantImageUrl
                         : _baseUrls.productImageUrl}'
                         '/${isRestaurant ? restaurant.logo : product.image}',
-                    height: _desktop ? 120 : 65, width: _desktop ? 120 : 80, fit: BoxFit.cover,
+                    height: _desktop ? 120 : length == null ? 100 : 65, width: _desktop ? 120 : 80, fit: BoxFit.cover,
                   ),
                 ),
                 DiscountTag(
@@ -199,7 +199,7 @@ class ProductWidget extends StatelessWidget {
             ]),
           )),
 
-          _desktop ? SizedBox() : Padding(
+          _desktop || length == null ? SizedBox() : Padding(
             padding: EdgeInsets.only(left: _desktop ? 130 : 90),
             child: Divider(color: index == length-1 ? Colors.transparent : Theme.of(context).disabledColor),
           ),

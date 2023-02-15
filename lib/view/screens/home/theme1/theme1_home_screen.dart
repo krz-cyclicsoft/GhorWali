@@ -1,5 +1,6 @@
 import 'package:efood_multivendor/controller/splash_controller.dart';
 import 'package:efood_multivendor/data/model/response/config_model.dart';
+import 'package:efood_multivendor/view/screens/home/widget/cuisine_view.dart';
 import 'package:efood_multivendor/view/screens/home/widget/filter_view.dart';
 import 'package:efood_multivendor/view/screens/home/widget/near_by_button_view.dart';
 import 'package:flutter/material.dart';
@@ -37,9 +38,9 @@ class Theme1HomeScreen extends StatelessWidget {
         // App Bar
         SliverAppBar(
           floating: true, elevation: 0, automaticallyImplyLeading: false,
-          backgroundColor: ResponsiveHelper.isDesktop(context) ? Colors.transparent : Theme.of(context).backgroundColor,
+          backgroundColor: ResponsiveHelper.isDesktop(context) ? Colors.transparent : Theme.of(context).colorScheme.background,
           title: Center(child: Container(
-            width: Dimensions.WEB_MAX_WIDTH, height: 50, color: Theme.of(context).backgroundColor,
+            width: Dimensions.WEB_MAX_WIDTH, height: 50, color: Theme.of(context).colorScheme.background,
             child: Row(children: [
               Expanded(child: InkWell(
                 onTap: () => Get.toNamed(RouteHelper.getAccessLocationRoute('home')),
@@ -54,19 +55,19 @@ class Theme1HomeScreen extends StatelessWidget {
                         Icon(
                           locationController.getUserAddress().addressType == 'home' ? Icons.home_filled
                               : locationController.getUserAddress().addressType == 'office' ? Icons.work : Icons.location_on,
-                          size: 20, color: Theme.of(context).textTheme.bodyText1.color,
+                          size: 20, color: Theme.of(context).textTheme.bodyLarge.color,
                         ),
                         SizedBox(width: 10),
                         Flexible(
                           child: Text(
                             locationController.getUserAddress().address,
                             style: robotoRegular.copyWith(
-                              color: Theme.of(context).textTheme.bodyText1.color, fontSize: Dimensions.fontSizeSmall,
+                              color: Theme.of(context).textTheme.bodyLarge.color, fontSize: Dimensions.fontSizeSmall,
                             ),
                             maxLines: 1, overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        Icon(Icons.arrow_drop_down, color: Theme.of(context).textTheme.bodyText1.color),
+                        Icon(Icons.arrow_drop_down, color: Theme.of(context).textTheme.bodyLarge.color),
                       ],
                     );
                   }),
@@ -75,7 +76,7 @@ class Theme1HomeScreen extends StatelessWidget {
               InkWell(
                 child: GetBuilder<NotificationController>(builder: (notificationController) {
                   return Stack(children: [
-                    Icon(Icons.notifications, size: 25, color: Theme.of(context).textTheme.bodyText1.color),
+                    Icon(Icons.notifications, size: 25, color: Theme.of(context).textTheme.bodyLarge.color),
                     notificationController.hasNotification ? Positioned(top: 0, right: 0, child: Container(
                       height: 10, width: 10, decoration: BoxDecoration(
                       color: Theme.of(context).primaryColor, shape: BoxShape.circle,
@@ -96,7 +97,7 @@ class Theme1HomeScreen extends StatelessWidget {
           pinned: true,
           delegate: SliverDelegate(child: Center(child: Container(
             height: 50, width: Dimensions.WEB_MAX_WIDTH,
-            color: Theme.of(context).backgroundColor,
+            color: Theme.of(context).colorScheme.background,
             padding: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_SMALL),
             child: InkWell(
               onTap: () => Get.toNamed(RouteHelper.getSearchRoute()),
@@ -135,6 +136,7 @@ class Theme1HomeScreen extends StatelessWidget {
               CategoryView1(),
               ItemCampaignView1(),
               _configModel.mostReviewedFoods == 1 ? BestReviewedItemView() : SizedBox(),
+              CuisinesView(),
               _configModel.popularRestaurant == 1 ? PopularStoreView1(isPopular: true) : SizedBox(),
               NearByButtonView(),
               _configModel.popularFood == 1 ? PopularItemView1(isPopular: true) : SizedBox(),

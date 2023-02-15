@@ -9,6 +9,7 @@ import 'package:efood_multivendor/data/model/body/signup_body.dart';
 import 'package:efood_multivendor/data/model/body/social_log_in_body.dart';
 import 'package:efood_multivendor/data/model/response/package_model.dart';
 import 'package:efood_multivendor/data/model/response/response_model.dart';
+import 'package:efood_multivendor/data/model/response/vehicle_model.dart';
 import 'package:efood_multivendor/data/model/response/zone_model.dart';
 import 'package:efood_multivendor/data/model/response/zone_response_model.dart';
 import 'package:efood_multivendor/data/repository/auth_repo.dart';
@@ -52,6 +53,9 @@ class AuthController extends GetxController implements GetxService {
   int _paymentIndex = 0;
   // int _restaurantId;
   bool isFirstTime = true;
+  List<VehicleModel> _vehicles;
+  List<int> _vehicleIds;
+  int _vehicleIndex = 0;
 
   bool get isLoading => _isLoading;
   bool get notification => _notification;
@@ -73,6 +77,9 @@ class AuthController extends GetxController implements GetxService {
   String get businessPlanStatus => _businessPlanStatus;
   int get paymentIndex => _paymentIndex;
   PackageModel get packageModel => _packageModel;
+  List<VehicleModel> get vehicles => _vehicles;
+  List<int> get vehicleIds => _vehicleIds;
+  int get vehicleIndex => _vehicleIndex;
 
   void resetBusiness(){
     _businessIndex = Get.find<SplashController>().configModel.businessPlan.commission == 0 ? 1 : 0;
@@ -170,6 +177,28 @@ class AuthController extends GetxController implements GetxService {
     _isLoading = false;
     update();
     return responseModel;
+  }
+
+  Future<void> getVehicleList() async {
+    Response response = await authRepo.getVehicleList();
+    if (response.statusCode == 200) {
+      _vehicles = [];
+      _vehicleIds = [];
+      _vehicleIds.add(0);
+      response.body.forEach((vehicle) => _vehicles.add(VehicleModel.fromJson(vehicle)));
+      response.body.forEach((vehicle) => _vehicleIds.add(VehicleModel.fromJson(vehicle).id));
+
+    } else {
+      ApiChecker.checkApi(response);
+    }
+    update();
+  }
+
+  void setVehicleIndex(int index, bool notify) {
+    _vehicleIndex = index;
+    if(notify) {
+      update();
+    }
   }
 
   Future<ResponseModel> registration(SignUpBody signUpBody) async {

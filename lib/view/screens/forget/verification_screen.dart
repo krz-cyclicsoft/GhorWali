@@ -79,7 +79,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                 'for_demo_purpose'.tr, style: robotoRegular,
               ) : RichText(text: TextSpan(children: [
                 TextSpan(text: 'enter_the_verification_sent_to'.tr, style: robotoRegular.copyWith(color: Theme.of(context).disabledColor)),
-                TextSpan(text: ' $_number', style: robotoMedium.copyWith(color: Theme.of(context).textTheme.bodyText1.color)),
+                TextSpan(text: ' $_number', style: robotoMedium.copyWith(color: Theme.of(context).textTheme.bodyLarge.color)),
               ])),
 
               Padding(
@@ -156,7 +156,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                               Image.asset(Images.checked, width: 100, height: 100),
                               SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
                               Text('verified'.tr, style: robotoBold.copyWith(
-                                fontSize: 30, color: Theme.of(context).textTheme.bodyText1.color,
+                                fontSize: 30, color: Theme.of(context).textTheme.bodyLarge.color,
                                 decoration: TextDecoration.none,
                               )),
                             ]),

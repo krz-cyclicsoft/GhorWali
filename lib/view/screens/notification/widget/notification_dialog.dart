@@ -1,6 +1,7 @@
 import 'package:efood_multivendor/controller/splash_controller.dart';
 import 'package:efood_multivendor/data/model/response/notification_model.dart';
 import 'package:efood_multivendor/util/dimensions.dart';
+import 'package:efood_multivendor/util/images.dart';
 import 'package:efood_multivendor/util/styles.dart';
 import 'package:efood_multivendor/view/base/custom_image.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,7 @@ class NotificationDialog extends StatelessWidget {
       insetPadding: EdgeInsets.all(30),
       clipBehavior: Clip.antiAliasWithSaveLayer,
       child:  SizedBox(
-        width: 600,
+        // width: 600,
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -31,22 +32,24 @@ class NotificationDialog extends StatelessWidget {
                 ),
               ),
 
-              Container(
+              (notificationModel.data.image != null && notificationModel.data.image.isNotEmpty) ? Container(
                 height: 150, width: MediaQuery.of(context).size.width,
                 margin: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_LARGE),
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL), color: Theme.of(context).primaryColor.withOpacity(0.20)),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
                   child: CustomImage(
+                    placeholder: Images.notification_placeholder,
                     image: '${Get.find<SplashController>().configModel.baseUrls.notificationImageUrl}/${notificationModel.data.image}',
                     height: 150, width: MediaQuery.of(context).size.width, fit: BoxFit.cover,
                   ),
                 ),
-              ),
-              SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+              ) : SizedBox(),
+              SizedBox(height: (notificationModel.data.image != null && notificationModel.data.image.isNotEmpty) ? Dimensions.PADDING_SIZE_LARGE : 0),
 
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_LARGE),
+                padding: EdgeInsets.symmetric(horizontal: (notificationModel.data.image != null && notificationModel.data.image.isNotEmpty)
+                    ? Dimensions.PADDING_SIZE_LARGE : 0),
                 child: Text(
                   notificationModel.data.title,
                   textAlign: TextAlign.center,

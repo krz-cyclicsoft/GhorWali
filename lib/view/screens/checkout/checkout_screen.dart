@@ -13,6 +13,7 @@ import 'package:efood_multivendor/data/model/body/place_order_body.dart';
 import 'package:efood_multivendor/data/model/response/address_model.dart';
 import 'package:efood_multivendor/data/model/response/cart_model.dart';
 import 'package:efood_multivendor/data/model/response/product_model.dart';
+import 'package:efood_multivendor/data/model/response/zone_response_model.dart';
 import 'package:efood_multivendor/helper/date_converter.dart';
 import 'package:efood_multivendor/helper/price_converter.dart';
 import 'package:efood_multivendor/helper/responsive_helper.dart';
@@ -128,25 +129,42 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             return GetBuilder<OrderController>(builder: (orderController) {
               double _deliveryCharge = -1;
               double _charge = -1;
+              double _maxCodOrderAmount;
               if(restController.restaurant != null && orderController.distance != null && orderController.distance != -1 ) {
-                double _zoneCharge = Get.find<LocationController>().getUserAddress().zoneData.firstWhere((data) => data.id == restController.restaurant.zoneId).perKmShippingCharge;
+                ZoneData _zoneData = Get.find<LocationController>().getUserAddress().zoneData.firstWhere((data) => data.id == restController.restaurant.zoneId);
                 double _perKmCharge = restController.restaurant.selfDeliverySystem == 1 ? restController.restaurant.perKmShippingCharge
-                    : (_zoneCharge != null ? _zoneCharge : Get.find<SplashController>().configModel.perKmShippingCharge);
+                    : _zoneData.perKmShippingCharge ?? 0;
+
                 double _minimumCharge = restController.restaurant.selfDeliverySystem == 1 ? restController.restaurant.minimumShippingCharge
-                    :  (_zoneCharge != null ? Get.find<LocationController>().getUserAddress().zoneData.firstWhere((data) => data.id == restController.restaurant.zoneId).minimumShippingCharge
-                    : Get.find<SplashController>().configModel.minimumShippingCharge);
-                _deliveryCharge = orderController.distance * _perKmCharge;
-                _charge = orderController.distance * _perKmCharge;
+                    :  _zoneData.minimumShippingCharge ?? 0;
+
+                double _maximumCharge = restController.restaurant.selfDeliverySystem == 1 ? restController.restaurant.maximumShippingCharge
+                : _zoneData.maximumShippingCharge;
+
+                _deliveryCharge = (orderController.distance * _perKmCharge) + (restController.restaurant.selfDeliverySystem == 1 ? 0 :  orderController.extraCharge != null ? orderController.extraCharge : 0);
+                _charge = (orderController.distance * _perKmCharge) + (restController.restaurant.selfDeliverySystem == 1 ? 0 : orderController.extraCharge != null ? orderController.extraCharge : 0);
+
+                print('--------distance: ${orderController.distance}');
+                print('--------_perKmCharge: $_perKmCharge');
+                print('--------_minimumCharge: $_minimumCharge');
+                print('--------_maximumCharge: $_maximumCharge');
+                print('--------extraCharge: ${orderController.extraCharge}');
                 if(_deliveryCharge < _minimumCharge) {
                   _deliveryCharge = _minimumCharge;
                   _charge = _minimumCharge;
+                }else if(_maximumCharge != null && _deliveryCharge > _maximumCharge){
+                  _deliveryCharge = _maximumCharge;
+                  _charge = _maximumCharge;
                 }
+
+                _maxCodOrderAmount = _zoneData.maxCodOrderAmount;
               }
 
               double _price = 0;
               double _discount = 0;
               double _couponDiscount = couponController.discount;
               double _tax = 0;
+              bool _taxIncluded = Get.find<SplashController>().configModel.taxIncluded == 1;
               double _addOns = 0;
               double _subTotal = 0;
               double _orderAmount = 0;
@@ -193,7 +211,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               }
 
               _tax = PriceConverter.calculation(_orderAmount, _taxPercent, 'percent', 1);
-              double _total = _subTotal + _deliveryCharge - _discount - _couponDiscount + _tax + orderController.tips;
+              double _total = _subTotal + _deliveryCharge - _discount - _couponDiscount + (_taxIncluded ? 0 : _tax) + orderController.tips;
 
               return (orderController.distance != null && locationController.addressList != null) ? Column(
                 children: [
@@ -654,8 +672,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
                             ]) : SizedBox(),
                             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                              Text('vat_tax'.tr, style: robotoRegular),
-                              Text('(+) ${PriceConverter.convertPrice(_tax)}', style: robotoRegular),
+                              Text('vat_tax'.tr + '${_taxIncluded ? 'tax_included'.tr : ''}', style: robotoRegular),
+                              Text('${_taxIncluded ? '' : '(+) '}' + PriceConverter.convertPrice(_tax), style: robotoRegular),
                             ]),
                             SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
 
@@ -730,13 +748,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           }
                         }
                       }
+
                       if(!_isCashOnDeliveryActive && !_isDigitalPaymentActive && !_isWalletActive) {
                         showCustomSnackBar('no_payment_method_is_enabled'.tr);
                       }else if(_orderAmount < restController.restaurant.minimumOrder) {
                         showCustomSnackBar('${'minimum_order_amount_is'.tr} ${restController.restaurant.minimumOrder}');
                       }else if((orderController.selectedDateSlot == 0 && _todayClosed) || (orderController.selectedDateSlot == 1 && _tomorrowClosed)) {
                         showCustomSnackBar('restaurant_is_closed'.tr);
-                      }else if (orderController.timeSlots == null || orderController.timeSlots.length == 0) {
+                      }else if(orderController.paymentMethodIndex == 0 && Get.find<SplashController>().configModel.cashOnDelivery && _maxCodOrderAmount != null && (_total > _maxCodOrderAmount)){
+                        showCustomSnackBar('you_cant_order_more_then'.tr + ' ${PriceConverter.convertPrice(_maxCodOrderAmount)} ' + 'in_cash_on_delivery'.tr);
+                      } else if (orderController.timeSlots == null || orderController.timeSlots.length == 0) {
                         if(restController.restaurant.scheduleOrder) {
                           showCustomSnackBar('select_a_time'.tr);
                         }else {
@@ -799,7 +820,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           contactPersonNumber: _address.contactPersonNumber ?? Get.find<UserController>().userInfoModel.phone,
                           discountAmount: _discount, taxAmount: _tax, road: _streetNumberController.text.trim(),
                           house: _houseController.text.trim(), floor: _floorController.text.trim(), dmTips: _tipController.text.trim(),
-                        ), _callback, _total);
+                        ), _callback, _total, _maxCodOrderAmount);
                       }
                     }) : Center(child: CircularProgressIndicator()),
                   ),
@@ -813,11 +834,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  void _callback(bool isSuccess, String message, String orderID, double amount) async {
+  void _callback(bool isSuccess, String message, String orderID, double amount, double maximumCodOrderAmount) async {
     if(isSuccess) {
-      // if(Get.find<OrderController>().isRunningOrderViewShow == false){
-      //   Get.find<OrderController>().closeRunningOrder(true);
-      // }
       Get.find<OrderController>().getRunningOrders(1, notify: false);
       if(widget.fromCart) {
         Get.find<CartController>().clearCartList();
@@ -834,7 +852,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
              .userInfoModel.id}&&callback=$protocol//$hostname${RouteHelper.orderSuccess}?id=$orderID&amount=$amount&status=';
          html.window.open(selectedUrl,"_self");
        } else{
-         Get.offNamed(RouteHelper.getPaymentRoute(orderID, Get.find<UserController>().userInfoModel.id, amount));
+         Get.offNamed(RouteHelper.getPaymentRoute(orderID, Get.find<UserController>().userInfoModel.id, amount, maximumCodOrderAmount));
        }
       }
       Get.find<OrderController>().clearPrevData();

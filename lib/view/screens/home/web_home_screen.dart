@@ -8,6 +8,7 @@ import 'package:efood_multivendor/util/styles.dart';
 import 'package:efood_multivendor/view/base/paginated_list_view.dart';
 import 'package:efood_multivendor/view/base/product_view.dart';
 import 'package:efood_multivendor/view/screens/home/web/web_banner_view.dart';
+import 'package:efood_multivendor/view/screens/home/web/web_cuisine_view.dart';
 import 'package:efood_multivendor/view/screens/home/web/web_popular_food_view.dart';
 import 'package:efood_multivendor/view/screens/home/web/web_category_view.dart';
 import 'package:efood_multivendor/view/screens/home/web/web_campaign_view.dart';
@@ -63,6 +64,8 @@ class _WebHomeScreenState extends State<WebHomeScreen> {
                 WebCampaignView(),
 
                 _configModel.popularFood == 1 ? WebPopularFoodView(isPopular: true) : SizedBox(),
+
+                WebCuisineView(),
 
                 _configModel.newRestaurant == 1 ? WebPopularRestaurantView(isPopular: false) : SizedBox(),
 

@@ -16,6 +16,7 @@ import 'package:efood_multivendor/util/styles.dart';
 import 'package:efood_multivendor/view/base/bottom_cart_widget.dart';
 import 'package:efood_multivendor/view/base/custom_image.dart';
 import 'package:efood_multivendor/view/base/product_view.dart';
+import 'package:efood_multivendor/view/base/product_widget.dart';
 import 'package:efood_multivendor/view/base/web_menu_bar.dart';
 import 'package:efood_multivendor/view/screens/restaurant/widget/restaurant_description_view.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +42,7 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
     if(Get.find<CategoryController>().categoryList == null) {
       Get.find<CategoryController>().getCategoryList(true);
     }
+    Get.find<RestaurantController>().getRestaurantRecommendedItemList(widget.restaurant.id, false);
     Get.find<RestaurantController>().getRestaurantProductList(widget.restaurant.id, 1, 'all', false);
     scrollController?.addListener(() {
       if (scrollController.position.pixels == scrollController.position.maxScrollExtent
@@ -133,15 +135,32 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                     image: '${Get.find<SplashController>().configModel.baseUrls.restaurantCoverPhotoUrl}/${_restaurant.coverPhoto}',
                   ),
                 ),
-                actions: [IconButton(
-                  onPressed: () => Get.toNamed(RouteHelper.getSearchRestaurantProductRoute(_restaurant.id)),
-                  icon: Container(
-                    height: 50, width: 50,
-                    decoration: BoxDecoration(shape: BoxShape.circle, color: Theme.of(context).primaryColor),
-                    alignment: Alignment.center,
-                    child: Icon(Icons.search, size: 20, color: Theme.of(context).cardColor),
+                actions: [
+
+                  // IconButton(
+                  //   onPressed: () {
+                  //     print('${AppConstants.YOUR_SCHEME}://${AppConstants.YOUR_HOST}${Get.currentRoute}');
+                  //     String shareUrl = '${AppConstants.YOUR_SCHEME}://${AppConstants.YOUR_HOST}${Get.currentRoute}';
+                  //     Share.share(shareUrl);
+                  //   },
+                  //   icon: Container(
+                  //     height: 50, width: 50,
+                  //     decoration: BoxDecoration(shape: BoxShape.circle, color: Theme.of(context).primaryColor),
+                  //     alignment: Alignment.center,
+                  //     child: Icon(Icons.share, size: 20, color: Theme.of(context).cardColor),
+                  //   ),
+                  // ),
+
+                  IconButton(
+                    onPressed: () => Get.toNamed(RouteHelper.getSearchRestaurantProductRoute(_restaurant.id)),
+                    icon: Container(
+                      height: 50, width: 50,
+                      decoration: BoxDecoration(shape: BoxShape.circle, color: Theme.of(context).primaryColor),
+                      alignment: Alignment.center,
+                      child: Icon(Icons.search, size: 20, color: Theme.of(context).cardColor),
+                    ),
                   ),
-                )],
+                ],
 
               ),
 
@@ -184,6 +203,45 @@ class _RestaurantScreenState extends State<RestaurantScreen> {
                         style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).cardColor),
                       ),
                     ]),
+                  ) : SizedBox(),
+                  SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+
+                  restController.recommendedProductModel != null && restController.recommendedProductModel.products.length > 0 ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('recommended_items'.tr, style: robotoMedium),
+                      SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+
+                      SizedBox(
+                        height: ResponsiveHelper.isDesktop(context) ? 150 : 120,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: restController.recommendedProductModel.products.length,
+                          physics: BouncingScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: ResponsiveHelper.isDesktop(context) ? EdgeInsets.symmetric(vertical: 20) : EdgeInsets.symmetric(vertical: 10) ,
+                              child: Container(
+                                width: ResponsiveHelper.isDesktop(context) ? 500 : 300,
+                                decoration: ResponsiveHelper.isDesktop(context) ? null : BoxDecoration(
+                                  borderRadius: BorderRadius.circular(Dimensions.RADIUS_DEFAULT),
+                                  color: Theme.of(context).cardColor,
+                                  border: Border.all(color: Theme.of(context).disabledColor, width: 0.2),
+                                  boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 700 : 300], blurRadius: 5)]
+                                ),
+                                padding: EdgeInsets.only(right: Dimensions.PADDING_SIZE_SMALL, left: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                                margin: EdgeInsets.only(right: Dimensions.PADDING_SIZE_SMALL),
+                                child: ProductWidget(
+                                  isRestaurant: false, product: restController.recommendedProductModel.products[index],
+                                  restaurant: null, index: index, length: null, isCampaign: false,
+                                  inRestaurant: true,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ) : SizedBox(),
                 ]),
               ))),

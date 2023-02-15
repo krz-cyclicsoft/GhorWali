@@ -39,4 +39,8 @@ class RestaurantRepo {
     return await apiClient.getData('${AppConstants.RESTAURANT_REVIEW_URI}?restaurant_id=$restaurantID');
   }
 
+  Future<Response> getRestaurantRecommendedItemList(int restaurantId) async {
+    return await apiClient.getData('${AppConstants.RESTAURANT_RECOMMENDER_ITEM_URI}?restaurant_id=$restaurantId&offset=1&limit=50');
+  }
+
 }

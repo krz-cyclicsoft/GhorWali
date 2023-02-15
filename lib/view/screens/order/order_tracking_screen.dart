@@ -103,7 +103,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> with WidgetsB
               _controller = controller;
               _isLoading = false;
               setMarker(
-                _track.restaurant, _track.deliveryMan ?? DeliveryMan(location: ''),
+                _track.restaurant, _track.deliveryMan,
                 _track.orderType == 'take_away' ? Get.find<LocationController>().position.latitude == 0 ? _track.deliveryAddress : AddressModel(
                   latitude: Get.find<LocationController>().position.latitude.toString(),
                   longitude: Get.find<LocationController>().position.longitude.toString(),

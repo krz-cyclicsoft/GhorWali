@@ -123,7 +123,7 @@ class CartProductWidget extends StatelessWidget {
                           RatingBar(rating: cart.product.avgRating, size: 12, ratingCount: cart.product.ratingCount),
                           SizedBox(height: 5),
                           Text(
-                            PriceConverter.convertPrice(cart.discountedPrice+cart.discountAmount),
+                            PriceConverter.convertPrice(cart.price/*+cart.discountAmount*/),
                             style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
                           ),
                         ]),

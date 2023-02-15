@@ -22,7 +22,7 @@ class _ItemCampaignScreenState extends State<ItemCampaignScreen> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      appBar: CustomAppBar(title: 'campaigns'.tr),
+      appBar: CustomAppBar(title: 'trending_food_offers'.tr),
       body: Scrollbar(child: SingleChildScrollView(child: Center(child: SizedBox(
         width: Dimensions.WEB_MAX_WIDTH,
         child: GetBuilder<CampaignController>(builder: (campController) {

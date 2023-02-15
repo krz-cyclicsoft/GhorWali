@@ -113,7 +113,7 @@ class PopularItemView1 extends StatelessWidget {
                                     _productList[index].discount > 0 ? Flexible(child: Text(
                                       PriceConverter.convertPrice(_productList[index].price),
                                       style: robotoMedium.copyWith(
-                                        fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).errorColor,
+                                        fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).colorScheme.error,
                                         decoration: TextDecoration.lineThrough,
                                       ),
                                     )) : SizedBox(),

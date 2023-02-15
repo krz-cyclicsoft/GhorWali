@@ -314,10 +314,22 @@ class LocationController extends GetxController implements GetxService {
 
   void autoNavigate(AddressModel address, bool fromSignUp, String route, bool canRoute) async {
     if(!GetPlatform.isWeb) {
-      if (Get.find<LocationController>().getUserAddress() != null && Get.find<LocationController>().getUserAddress().zoneId != address.zoneId) {
-        FirebaseMessaging.instance.unsubscribeFromTopic('zone_${Get.find<LocationController>().getUserAddress().zoneId}_customer');
-        FirebaseMessaging.instance.subscribeToTopic('zone_${address.zoneId}_customer');
+      if (Get.find<LocationController>().getUserAddress() != null) {
+        if(Get.find<LocationController>().getUserAddress().zoneIds != null) {
+          for(int zoneID in Get.find<LocationController>().getUserAddress().zoneIds) {
+            FirebaseMessaging.instance.unsubscribeFromTopic('zone_${zoneID}_customer');
+          }
+        }else {
+          FirebaseMessaging.instance.unsubscribeFromTopic('zone_${Get.find<LocationController>().getUserAddress().zoneId}_customer');
+        }
       } else {
+        FirebaseMessaging.instance.subscribeToTopic('zone_${address.zoneId}_customer');
+      }
+      if(address.zoneIds != null) {
+        for(int zoneID in address.zoneIds) {
+          FirebaseMessaging.instance.subscribeToTopic('zone_${zoneID}_customer');
+        }
+      }else {
         FirebaseMessaging.instance.subscribeToTopic('zone_${address.zoneId}_customer');
       }
     }

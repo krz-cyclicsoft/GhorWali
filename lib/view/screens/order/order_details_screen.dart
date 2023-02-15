@@ -1,3 +1,4 @@
+import 'package:efood_multivendor/controller/location_controller.dart';
 import 'package:efood_multivendor/controller/order_controller.dart';
 import 'package:efood_multivendor/controller/splash_controller.dart';
 import 'package:efood_multivendor/data/model/body/notification_body.dart';
@@ -17,6 +18,7 @@ import 'package:efood_multivendor/view/base/custom_button.dart';
 import 'package:efood_multivendor/view/base/custom_image.dart';
 import 'package:efood_multivendor/view/base/custom_snackbar.dart';
 import 'package:efood_multivendor/view/screens/chat/widget/image_dialog.dart';
+import 'package:efood_multivendor/view/screens/order/widget/cancellation_dialogue.dart';
 import 'package:efood_multivendor/view/screens/order/widget/order_product_widget.dart';
 import 'package:efood_multivendor/view/screens/restaurant/widget/review_dialog.dart';
 import 'package:efood_multivendor/view/screens/review/rate_review_screen.dart';
@@ -98,8 +100,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
           double _addOns = 0;
           double _dmTips = 0;
           bool _showChatPermission = true;
+          bool _taxIncluded = false;
           OrderModel _order = orderController.trackModel;
-          if(orderController.orderDetails != null) {
+          if(orderController.orderDetails != null && _order != null) {
             if(_order.orderType == 'delivery') {
               _deliveryCharge = _order.deliveryCharge;
               _dmTips = _order.dmTips;
@@ -107,6 +110,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
             _couponDiscount = _order.couponDiscountAmount;
             _discount = _order.restaurantDiscountAmount;
             _tax = _order.totalTaxAmount;
+            _taxIncluded = _order.taxStatus;
             for(OrderDetailsModel orderDetails in orderController.orderDetails) {
               for(AddOn addOn in orderDetails.addOns) {
                 _addOns = _addOns + (addOn.price * addOn.quantity);
@@ -125,7 +129,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
             }
           }
           double _subTotal = _itemsPrice + _addOns;
-          double _total = _itemsPrice + _addOns - _discount + _tax + _deliveryCharge - _couponDiscount + _dmTips;
+          double _total = _itemsPrice + _addOns - _discount + (_taxIncluded ? 0 : _tax) + _deliveryCharge - _couponDiscount + _dmTips;
 
           return (_order != null && orderController.orderDetails != null) ? Column(children: [
 
@@ -232,14 +236,29 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                   ]),
                 ),
 
+                _order.orderStatus == 'canceled' ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Divider(height: Dimensions.PADDING_SIZE_LARGE),
+                  Text('${'cancellation_note'.tr}:', style: robotoMedium),
+                  SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+
+                  InkWell(
+                    onTap: () => Get.dialog(ReviewDialog(review: ReviewModel(comment: _order.cancellationReason), fromOrderDetails: true)),
+                    child: Text(
+                      '${_order.cancellationReason != null ? _order.cancellationReason : ''}', maxLines: 2, overflow: TextOverflow.ellipsis,
+                      style: robotoRegular.copyWith(color: Theme.of(context).disabledColor),
+                    ),
+                  ),
+
+                ]) : SizedBox(),
+
                 (_order.orderStatus == 'refund_requested' || _order.orderStatus == 'refund_request_canceled') ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
                   Divider(height: Dimensions.PADDING_SIZE_LARGE),
                   _order.orderStatus == 'refund_requested' ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
                     RichText(text: TextSpan(children: [
-                      TextSpan(text: '${'refund_note'.tr}:', style: robotoMedium.copyWith(color: Theme.of(context).textTheme.bodyText1.color)),
-                      TextSpan(text: '(${(_order.refund != null) ? _order.refund.customerReason : ''})', style: robotoRegular.copyWith(color: Theme.of(context).textTheme.bodyText1.color)),
+                      TextSpan(text: '${'refund_note'.tr}:', style: robotoMedium.copyWith(color: Theme.of(context).textTheme.bodyLarge.color)),
+                      TextSpan(text: '(${(_order.refund != null) ? _order.refund.customerReason : ''})', style: robotoRegular.copyWith(color: Theme.of(context).textTheme.bodyLarge.color)),
                     ])),
                     SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
 
@@ -394,7 +413,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                 Divider(thickness: 1, color: Theme.of(context).hintColor.withOpacity(0.5)),
 
                 Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  Text('subtotal'.tr, style: robotoMedium),
+                  Text('subtotal'.tr + ' ${_taxIncluded ? 'tax_included'.tr : ''}', style: robotoMedium),
                   Text(PriceConverter.convertPrice(_subTotal), style: robotoMedium),
                 ]),
                 SizedBox(height: 10),
@@ -414,11 +433,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                 ]) : SizedBox(),
                 SizedBox(height: _couponDiscount > 0 ? 10 : 0),
 
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                !_taxIncluded ? Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                   Text('vat_tax'.tr, style: robotoRegular),
                   Text('(+) ${PriceConverter.convertPrice(_tax)}', style: robotoRegular),
-                ]),
-                SizedBox(height: 10),
+                ]) : SizedBox(),
+                SizedBox(height: _taxIncluded ? 0 : 10),
 
                 (_order.orderType != 'take_away' && Get.find<SplashController>().configModel.dmTipsStatus == 1) ? Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -478,11 +497,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                         side: BorderSide(width: 2, color: Theme.of(context).disabledColor),
                       )),
                       onPressed: () {
-                        Get.dialog(ConfirmationDialog(
-                          icon: Images.warning, description: 'are_you_sure_to_cancel'.tr, onYesPressed: () {
-                            orderController.cancelOrder(_order.id);
-                          },
-                        ));
+                        orderController.setOrderCancelReason('');
+                        Get.dialog(CancellationDialogue(orderId: _order.id));
                       },
                       child: Text('cancel_order'.tr, style: robotoBold.copyWith(
                         color: Theme.of(context).disabledColor, fontSize: Dimensions.fontSizeLarge,
@@ -541,12 +557,22 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                     Get.dialog(ConfirmationDialog(
                       icon: Images.warning, description: 'are_you_sure_to_switch'.tr,
                       onYesPressed: () {
-                        orderController.switchToCOD(_order.id.toString()).then((isSuccess) {
-                          Get.back();
-                          if(isSuccess) {
+                        double _maxCodOrderAmount = Get.find<LocationController>().getUserAddress().zoneData.firstWhere((data) => data.id == _order.restaurant.zoneId).maxCodOrderAmount
+                            ?? 0;
+
+                        if(_maxCodOrderAmount > _total){
+                          orderController.switchToCOD(_order.id.toString()).then((isSuccess) {
+                            Get.back();
+                            if(isSuccess) {
+                              Get.back();
+                            }
+                          });
+                        }else{
+                          if(Get.isDialogOpen) {
                             Get.back();
                           }
-                        });
+                          showCustomSnackBar('you_cant_order_more_then'.tr + ' ${PriceConverter.convertPrice(_maxCodOrderAmount)} ' + 'in_cash_on_delivery'.tr);
+                        }
                       }
                     ));
                   },

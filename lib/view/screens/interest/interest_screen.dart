@@ -79,7 +79,7 @@ class _InterestScreenState extends State<InterestScreen> {
                               style: robotoMedium.copyWith(
                                 fontSize: Dimensions.fontSizeSmall,
                                 color: categoryController.interestSelectedList[index] ? Theme.of(context).cardColor
-                                    : Theme.of(context).textTheme.bodyText1.color,
+                                    : Theme.of(context).textTheme.bodyLarge.color,
                               ),
                               maxLines: 1, overflow: TextOverflow.ellipsis,
                             )),

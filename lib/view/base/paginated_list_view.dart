@@ -76,28 +76,30 @@ class _PaginatedListViewState extends State<PaginatedListView> {
       }
     }
 
-    return Column(children: [
+    return SingleChildScrollView(
+      child: Column(children: [
 
-      widget.reverse ? SizedBox() : widget.productView,
+        widget.reverse ? SizedBox() : widget.productView,
 
-      (ResponsiveHelper.isDesktop(context) && (widget.totalSize == null || _offset >= (widget.totalSize / 10).ceil() || _offsetList.contains(_offset+1))) ? SizedBox() : Center(child: Padding(
-        padding: (_isLoading || ResponsiveHelper.isDesktop(context)) ? EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL) : EdgeInsets.zero,
-        child: _isLoading ? CircularProgressIndicator() : (ResponsiveHelper.isDesktop(context) && widget.totalSize != null) ? InkWell(
-          onTap: _paginate,
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: Dimensions.PADDING_SIZE_SMALL, horizontal: Dimensions.PADDING_SIZE_LARGE),
-            margin: ResponsiveHelper.isDesktop(context) ? EdgeInsets.only(top: Dimensions.PADDING_SIZE_SMALL) : null,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
-              color: Theme.of(context).primaryColor,
+        (ResponsiveHelper.isDesktop(context) && (widget.totalSize == null || _offset >= (widget.totalSize / 10).ceil() || _offsetList.contains(_offset+1))) ? SizedBox() : Center(child: Padding(
+          padding: (_isLoading || ResponsiveHelper.isDesktop(context)) ? EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL) : EdgeInsets.zero,
+          child: _isLoading ? CircularProgressIndicator() : (ResponsiveHelper.isDesktop(context) && widget.totalSize != null) ? InkWell(
+            onTap: _paginate,
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: Dimensions.PADDING_SIZE_SMALL, horizontal: Dimensions.PADDING_SIZE_LARGE),
+              margin: ResponsiveHelper.isDesktop(context) ? EdgeInsets.only(top: Dimensions.PADDING_SIZE_SMALL) : null,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                color: Theme.of(context).primaryColor,
+              ),
+              child: Text('view_more'.tr, style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge, color: Colors.white)),
             ),
-            child: Text('view_more'.tr, style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge, color: Colors.white)),
-          ),
-        ) : SizedBox(),
-      )),
+          ) : SizedBox(),
+        )),
 
-      widget.reverse ? widget.productView : SizedBox(),
+        widget.reverse ? widget.productView : SizedBox(),
 
-    ]);
+      ]),
+    );
   }
 }

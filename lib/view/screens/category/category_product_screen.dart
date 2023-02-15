@@ -115,12 +115,12 @@ class _CategoryProductScreenState extends State<CategoryProductScreen> with Tick
                 catController.type,
               ),
             ) : Text(widget.categoryName, style: robotoRegular.copyWith(
-              fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).textTheme.bodyText1.color,
+              fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).textTheme.bodyLarge.color,
             )),
             centerTitle: true,
             leading: IconButton(
               icon: Icon(Icons.arrow_back_ios),
-              color: Theme.of(context).textTheme.bodyText1.color,
+              color: Theme.of(context).textTheme.bodyLarge.color,
               onPressed: () {
                 if(catController.isSearching) {
                   catController.toggleSearch();
@@ -136,12 +136,12 @@ class _CategoryProductScreenState extends State<CategoryProductScreen> with Tick
                 onPressed: () => catController.toggleSearch(),
                 icon: Icon(
                   catController.isSearching ? Icons.close_sharp : Icons.search,
-                  color: Theme.of(context).textTheme.bodyText1.color,
+                  color: Theme.of(context).textTheme.bodyLarge.color,
                 ),
               ),
               IconButton(
                 onPressed: () => Get.toNamed(RouteHelper.getCartRoute()),
-                icon: CartWidget(color: Theme.of(context).textTheme.bodyText1.color, size: 25),
+                icon: CartWidget(color: Theme.of(context).textTheme.bodyLarge.color, size: 25),
               ),
             ],
           ),

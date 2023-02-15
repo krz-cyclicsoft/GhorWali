@@ -20,8 +20,6 @@ class ConfigModel {
   String currencySymbolDirection;
   double appMinimumVersionAndroid;
   double appMinimumVersionIos;
-  double perKmShippingCharge;
-  double minimumShippingCharge;
   double freeDeliveryOver;
   bool demo;
   bool maintenanceMode;
@@ -60,6 +58,7 @@ class ConfigModel {
   String shippingPolicyData;
   int freeTrialPeriodStatus;
   int freeTrialPeriodDay;
+  int taxIncluded;
 
   ConfigModel(
       {this.businessName,
@@ -83,8 +82,6 @@ class ConfigModel {
         this.currencySymbolDirection,
         this.appMinimumVersionAndroid,
         this.appMinimumVersionIos,
-        this.perKmShippingCharge,
-        this.minimumShippingCharge,
         this.freeDeliveryOver,
         this.demo,
         this.maintenanceMode,
@@ -123,6 +120,7 @@ class ConfigModel {
         this.shippingPolicyData,
         this.freeTrialPeriodStatus,
         this.freeTrialPeriodDay,
+        this.taxIncluded,
       });
 
   ConfigModel.fromJson(Map<String, dynamic> json) {
@@ -147,8 +145,6 @@ class ConfigModel {
     currencySymbolDirection = json['currency_symbol_direction'];
     appMinimumVersionAndroid = json['app_minimum_version_android'] != null ? json['app_minimum_version_android'].toDouble() : 0.0;
     appMinimumVersionIos = json['app_minimum_version_ios'] != null ? json['app_minimum_version_ios'].toDouble() : 0.0;
-    perKmShippingCharge = json['per_km_shipping_charge'].toDouble();
-    minimumShippingCharge = json['minimum_shipping_charge'].toDouble();
     freeDeliveryOver = json['free_delivery_over'] != null ? double.parse(json['free_delivery_over'].toString()) : null;
     demo = json['demo'];
     maintenanceMode = json['maintenance_mode'];
@@ -192,6 +188,7 @@ class ConfigModel {
     shippingPolicyData = json['shipping_policy_data'];
     freeTrialPeriodStatus = json['free_trial_period_status'];
     freeTrialPeriodDay = json['free_trial_period_data'];
+    taxIncluded = json['tax_included'];
   }
 
   Map<String, dynamic> toJson() {
@@ -221,8 +218,6 @@ class ConfigModel {
     data['currency_symbol_direction'] = this.currencySymbolDirection;
     data['app_minimum_version_android'] = this.appMinimumVersionAndroid;
     data['app_minimum_version_ios'] = this.appMinimumVersionIos;
-    data['per_km_shipping_charge'] = this.perKmShippingCharge;
-    data['minimum_shipping_charge'] = this.minimumShippingCharge;
     data['free_delivery_over'] = this.freeDeliveryOver;
     data['demo'] = this.demo;
     data['maintenance_mode'] = this.maintenanceMode;
@@ -253,6 +248,7 @@ class ConfigModel {
     data['ref_earning_exchange_rate'] = this.refEarningExchangeRate;
     data['theme'] = this.theme;
     data['refund_active_status'] = this.refundStatus;
+    data['tax_included'] = this.taxIncluded;
     return data;
   }
 }
@@ -271,6 +267,7 @@ class BaseUrls {
   String campaignImageUrl;
   String businessLogoUrl;
   String refundImageUrl;
+  String cuisineImageUrl;
 
   BaseUrls(
       {this.productImageUrl,
@@ -286,6 +283,7 @@ class BaseUrls {
         this.campaignImageUrl,
         this.businessLogoUrl,
         this.refundImageUrl,
+        this.cuisineImageUrl,
       });
 
   BaseUrls.fromJson(Map<String, dynamic> json) {
@@ -302,6 +300,7 @@ class BaseUrls {
     campaignImageUrl = json['campaign_image_url'];
     businessLogoUrl = json['business_logo_url'];
     refundImageUrl = json['refund_image_url'];
+    cuisineImageUrl = json['cuisine_image_url'];
   }
 
   Map<String, dynamic> toJson() {
@@ -319,6 +318,7 @@ class BaseUrls {
     data['campaign_image_url'] = this.campaignImageUrl;
     data['business_logo_url'] = this.businessLogoUrl;
     data['refund_image_url'] = this.refundImageUrl;
+    data['cuisine_image_url'] = this.cuisineImageUrl;
     return data;
   }
 }

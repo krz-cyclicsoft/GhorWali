@@ -249,7 +249,7 @@ class _BusinessPlanScreenState extends State<BusinessPlanScreen> {
                 alignment: Alignment.center,
                 width: context.width,
                 padding: EdgeInsets.all(Dimensions.PADDING_SIZE_EXTRA_LARGE),
-                child: Text(title, style: robotoBold.copyWith(color: authController.paymentIndex == index ? Theme.of(context).primaryColor : Theme.of(context).textTheme.bodyText1.color)),
+                child: Text(title, style: robotoBold.copyWith(color: authController.paymentIndex == index ? Theme.of(context).primaryColor : Theme.of(context).textTheme.bodyLarge.color)),
               ),
             ),
 
@@ -280,7 +280,7 @@ class _BusinessPlanScreenState extends State<BusinessPlanScreen> {
               boxShadow: authController.businessIndex == index ? null : [BoxShadow(color: Colors.grey[200], offset: Offset(5, 5), blurRadius: 10)]
           ),
           padding: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_DEFAULT, vertical: Dimensions.PADDING_SIZE_LARGE),
-          child: Center(child: Text(title, style: robotoMedium.copyWith(color: authController.businessIndex == index ? Theme.of(context).primaryColor : Theme.of(context).textTheme.bodyText1.color, fontSize: Dimensions.fontSizeDefault))),
+          child: Center(child: Text(title, style: robotoMedium.copyWith(color: authController.businessIndex == index ? Theme.of(context).primaryColor : Theme.of(context).textTheme.bodyLarge.color, fontSize: Dimensions.fontSizeDefault))),
         ),
 
         authController.businessIndex == index ? Positioned(

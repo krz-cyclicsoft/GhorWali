@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:efood_multivendor/controller/location_controller.dart';
 import 'package:efood_multivendor/controller/splash_controller.dart';
+import 'package:efood_multivendor/data/model/body/deep_link_body.dart';
 import 'package:efood_multivendor/data/model/body/notification_body.dart';
 import 'package:efood_multivendor/data/model/body/social_log_in_body.dart';
 import 'package:efood_multivendor/data/model/response/address_model.dart';
@@ -30,6 +31,8 @@ import 'package:efood_multivendor/view/screens/checkout/checkout_screen.dart';
 import 'package:efood_multivendor/view/screens/checkout/order_successful_screen.dart';
 import 'package:efood_multivendor/view/screens/checkout/payment_screen.dart';
 import 'package:efood_multivendor/view/screens/coupon/coupon_screen.dart';
+import 'package:efood_multivendor/view/screens/cuisine/cuisine_restaurant_screen.dart';
+import 'package:efood_multivendor/view/screens/cuisine/cuisine_screen.dart';
 import 'package:efood_multivendor/view/screens/dashboard/dashboard_screen.dart';
 import 'package:efood_multivendor/view/screens/food/item_campaign_screen.dart';
 import 'package:efood_multivendor/view/screens/food/popular_food_screen.dart';
@@ -118,15 +121,22 @@ class RouteHelper {
   static const String refund = '/refund';
   static const String businessPlan = '/business-plan';
   static const String order = '/order';
+  static const String cuisine = '/cuisine';
+  static const String cuisineRestaurant = '/cuisine-restaurant';
 
   static String getInitialRoute() => '$initial';
-  static String getSplashRoute(NotificationBody body) {
+  static String getSplashRoute(NotificationBody body, DeepLinkBody linkBody) {
     String _data = 'null';
+    String _linkData = 'null';
     if(body != null) {
       List<int> _encoded = utf8.encode(jsonEncode(body.toJson()));
       _data = base64Encode(_encoded);
     }
-    return '$splash?data=$_data';
+    if(linkBody != null) {
+      List<int> _encoded = utf8.encode(jsonEncode(linkBody.toJson()));
+      _linkData = base64Encode(_encoded);
+    }
+    return '$splash?data=$_data&link=$_linkData';
   }
   static String getLanguageRoute(String page) => '$language?page=$page';
   static String getOnBoardingRoute() => '$onBoarding';
@@ -155,7 +165,7 @@ class RouteHelper {
   static String getProfileRoute() => '$profile';
   static String getUpdateProfileRoute() => '$updateProfile';
   static String getCouponRoute({@required bool fromCheckout}) => '$coupon?fromCheckout=${fromCheckout ? 'true' : 'false'}';
-  static String getNotificationRoute() => '$notification';
+  static String getNotificationRoute({bool fromNotification = false}) => '$notification?fromNotification=${fromNotification.toString()}';
   static String getMapRoute(AddressModel addressModel, String page) {
     List<int> _encoded = utf8.encode(jsonEncode(addressModel.toJson()));
     String _data = base64Encode(_encoded);
@@ -163,7 +173,7 @@ class RouteHelper {
   }
   static String getAddressRoute() => '$address';
   static String getOrderSuccessRoute(String orderID, String status, double amount) => '$orderSuccess?id=$orderID&status=$status&amount=$amount';
-  static String getPaymentRoute(String id, int user, double amount) => '$payment?id=$id&user=$user&amount=$amount';
+  static String getPaymentRoute(String id, int user, double amount, double maximumCodOrderAmount) => '$payment?id=$id&user=$user&amount=$amount&max-cod-amount=$maximumCodOrderAmount';
   static String getCheckoutRoute(String page) => '$checkout?page=$page';
   static String getOrderTrackingRoute(int id) => '$orderTracking?id=$id';
   static String getBasicCampaignRoute(BasicCampaignModel basicCampaignModel) {
@@ -215,16 +225,23 @@ class RouteHelper {
   static String getRefundRequestRoute(String orderID) => '$refund?id=$orderID';
   static String getBusinessPlanRoute(int restaurantId) => '$businessPlan?id=$restaurantId';
   static String getOrderRoute() => '$order';
+  static String getCuisineRoute() => '$cuisine';
+  static String getCuisineRestaurantRoute(int cuisineId, String name) => '$cuisineRestaurant?id=$cuisineId&name=$name';
 
   static List<GetPage> routes = [
     GetPage(name: initial, page: () => getRoute(DashboardScreen(pageIndex: 0))),
     GetPage(name: splash, page: () {
       NotificationBody _data;
+      DeepLinkBody _linkData;
       if(Get.parameters['data'] != 'null') {
         List<int> _decode = base64Decode(Get.parameters['data'].replaceAll(' ', '+'));
         _data = NotificationBody.fromJson(jsonDecode(utf8.decode(_decode)));
       }
-      return SplashScreen(body: _data);
+      if(Get.parameters['link'] != 'null') {
+        List<int> _decode = base64Decode(Get.parameters['link'].replaceAll(' ', '+'));
+        _linkData = DeepLinkBody.fromJson(jsonDecode(utf8.decode(_decode)));
+      }
+      return SplashScreen(notificationBody: _data, linkBody: _linkData);
     }),
     GetPage(name: language, page: () => ChooseLanguageScreen(fromMenu: Get.parameters['page'] == 'menu')),
     GetPage(name: onBoarding, page: () => OnBoardingScreen()),
@@ -278,7 +295,7 @@ class RouteHelper {
     GetPage(name: profile, page: () => getRoute(ProfileScreen())),
     GetPage(name: updateProfile, page: () => getRoute(UpdateProfileScreen())),
     GetPage(name: coupon, page: () => getRoute(CouponScreen(fromCheckout: Get.parameters['fromCheckout'] == 'true'))),
-    GetPage(name: notification, page: () => getRoute(NotificationScreen())),
+    GetPage(name: notification, page: () => getRoute(NotificationScreen(fromNotification: Get.parameters['fromNotification'] == 'true'))),
     GetPage(name: map, page: () {
       List<int> _decode = base64Decode(Get.parameters['address'].replaceAll(' ', '+'));
       AddressModel _data = AddressModel.fromJson(jsonDecode(utf8.decode(_decode)));
@@ -290,7 +307,8 @@ class RouteHelper {
     ))),
     GetPage(name: payment, page: () => getRoute(PaymentScreen(orderModel: OrderModel(
         id: int.parse(Get.parameters['id']), userId: int.parse(Get.parameters['user']), orderAmount: double.parse( Get.parameters['amount']),
-    )))),
+    ), maximumCodOrderAmount: Get.parameters['max-cod-amount'] != 'null' ? double.parse( Get.parameters['max-cod-amount']) : null,
+    ))),
     GetPage(name: checkout, page: () {
       CheckoutScreen _checkoutScreen = Get.arguments;
       bool _fromCart = Get.parameters['page'] == 'cart';
@@ -356,6 +374,8 @@ class RouteHelper {
     GetPage(name: refund, page: () => RefundRequestScreen(orderId: Get.parameters['id'])),
     GetPage(name: businessPlan, page: () => BusinessPlanScreen(restaurantId: int.parse(Get.parameters['id']))),
     GetPage(name: order, page: () => getRoute(OrderScreen())),
+    GetPage(name: cuisine, page: () => getRoute(CuisineScreen())),
+    GetPage(name: cuisineRestaurant, page: () => getRoute(CuisineRestaurantScreen(cuisineId: int.parse(Get.parameters['id']), name: Get.parameters['name']))),
   ];
 
   static getRoute(Widget navigateTo) {

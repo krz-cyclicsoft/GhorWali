@@ -5,6 +5,7 @@ import 'package:efood_multivendor/controller/order_controller.dart';
 import 'package:efood_multivendor/data/api/api_checker.dart';
 import 'package:efood_multivendor/data/model/response/category_model.dart';
 import 'package:efood_multivendor/data/model/response/product_model.dart';
+import 'package:efood_multivendor/data/model/response/recommended_product_model.dart';
 import 'package:efood_multivendor/data/model/response/restaurant_model.dart';
 import 'package:efood_multivendor/data/model/response/review_model.dart';
 import 'package:efood_multivendor/data/repository/restaurant_repo.dart';
@@ -38,6 +39,7 @@ class RestaurantController extends GetxController implements GetxService {
   String _type = 'all';
   String _searchType = 'all';
   String _searchText = '';
+  RecommendedProductModel _recommendedProductModel;
 
   RestaurantModel get restaurantModel => _restaurantModel;
   List<Restaurant> get restaurantList => _restaurantList;
@@ -58,6 +60,22 @@ class RestaurantController extends GetxController implements GetxService {
   String get type => _type;
   String get searchType => _searchType;
   String get searchText => _searchText;
+  RecommendedProductModel get recommendedProductModel => _recommendedProductModel;
+
+  Future<void> getRestaurantRecommendedItemList(int restaurantId, bool reload) async {
+    if(reload) {
+      _restaurantModel = null;
+      update();
+    }
+    Response response = await restaurantRepo.getRestaurantRecommendedItemList(restaurantId);
+    if (response.statusCode == 200) {
+      _recommendedProductModel = RecommendedProductModel.fromJson(response.body);
+
+    } else {
+      ApiChecker.checkApi(response);
+    }
+    update();
+  }
 
   Future<void> getRestaurantList(int offset, bool reload) async {
     if(reload) {

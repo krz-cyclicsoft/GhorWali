@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class RestaurantBody {
   String restaurantName;
   String restaurantAddress;
@@ -12,6 +14,7 @@ class RestaurantBody {
   String email;
   String password;
   String zoneId;
+  List<String> cuisineId;
 
   RestaurantBody(
       {this.restaurantName,
@@ -27,6 +30,7 @@ class RestaurantBody {
         this.email,
         this.password,
         this.zoneId,
+        this.cuisineId,
       });
 
   RestaurantBody.fromJson(Map<String, dynamic> json) {
@@ -43,6 +47,7 @@ class RestaurantBody {
     email = json['email'];
     password = json['password'];
     zoneId = json['zone_id'];
+    cuisineId = json['cuisine_ids'];
   }
 
   Map<String, String> toJson() {
@@ -60,6 +65,8 @@ class RestaurantBody {
     data['email'] = this.email;
     data['password'] = this.password;
     data['zone_id'] = this.zoneId;
+    data['cuisine_ids'] = jsonEncode(this.cuisineId);
+
     return data;
   }
 }

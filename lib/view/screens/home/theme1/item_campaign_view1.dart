@@ -18,7 +18,7 @@ class ItemCampaignView1 extends StatelessWidget {
         children: [
           Padding(
             padding: EdgeInsets.fromLTRB(10, 15, 10, 10),
-            child: TitleWidget(title: 'campaigns'.tr, onTap: () => Get.toNamed(RouteHelper.getItemCampaignRoute())),
+            child: TitleWidget(title: 'trending_food_offers'.tr, onTap: () => Get.toNamed(RouteHelper.getItemCampaignRoute())),
           ),
 
           SizedBox(

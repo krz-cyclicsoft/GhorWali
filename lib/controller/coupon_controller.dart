@@ -1,3 +1,4 @@
+import 'package:efood_multivendor/controller/user_controller.dart';
 import 'package:efood_multivendor/data/api/api_checker.dart';
 import 'package:efood_multivendor/data/model/response/coupon_model.dart';
 import 'package:efood_multivendor/data/repository/coupon_repo.dart';
@@ -25,7 +26,7 @@ class CouponController extends GetxController implements GetxService {
   String get checkoutCouponCode => _checkoutCouponCode;
 
   Future<void> getCouponList() async {
-    Response response = await couponRepo.getCouponList();
+    Response response = await couponRepo.getCouponList(Get.find<UserController>().userInfoModel.id);
     if (response.statusCode == 200) {
       _couponList = [];
       response.body.forEach((category) => _couponList.add(CouponModel.fromJson(category)));

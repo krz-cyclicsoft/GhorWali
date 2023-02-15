@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:efood_multivendor/controller/auth_controller.dart';
+import 'package:efood_multivendor/controller/cuisine_controller.dart';
 import 'package:efood_multivendor/data/model/body/restaurant_body.dart';
 import 'package:efood_multivendor/util/dimensions.dart';
 import 'package:efood_multivendor/util/images.dart';
@@ -33,6 +34,7 @@ class _RestaurantRegistrationScreenState extends State<RestaurantRegistrationScr
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
+  TextEditingController _c = TextEditingController();
   final FocusNode _nameFocus = FocusNode();
   final FocusNode _addressFocus = FocusNode();
   final FocusNode _vatFocus = FocusNode();
@@ -51,6 +53,7 @@ class _RestaurantRegistrationScreenState extends State<RestaurantRegistrationScr
     super.initState();
 
     Get.find<AuthController>().getZoneList();
+    Get.find<CuisineController>().getCuisineList();
   }
 
   @override
@@ -119,7 +122,101 @@ class _RestaurantRegistrationScreenState extends State<RestaurantRegistrationScr
                           isAmount: true,
                           showTitle: true,
                         ),
-                        SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+                        SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'cuisine'.tr,
+                            style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall),
+                          ),
+                        ),
+                        SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                        GetBuilder<CuisineController>(builder: (cuisineController) {
+                          List<int> _cuisines = [];
+                          if(cuisineController.cuisineModel != null) {
+                            for(int index=0; index<cuisineController.cuisineModel.cuisines.length; index++) {
+                              if(cuisineController.cuisineModel.cuisines[index].status == 1 && !cuisineController.selectedCuisines.contains(index)) {
+                                _cuisines.add(index);
+                              }
+                            }
+                          }
+                          return Column(children: [
+                              Autocomplete<int>(
+                                optionsBuilder: (TextEditingValue value) {
+                                  if(value.text.isEmpty) {
+                                    return Iterable<int>.empty();
+                                  }else {
+                                    return _cuisines.where((cuisine) => cuisineController.cuisineModel.cuisines[cuisine].name.toLowerCase().contains(value.text.toLowerCase()));
+                                  }
+                                },
+                                fieldViewBuilder: (context, controller, node, onComplete) {
+                                  _c = controller;
+                                  return Container(
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).cardColor,
+                                      borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                                      boxShadow: [BoxShadow(color: Colors.grey[Get.isDarkMode ? 800 : 200], spreadRadius: 2, blurRadius: 5, offset: Offset(0, 5))],
+                                    ),
+                                    child: TextField(
+                                      controller: controller,
+                                      focusNode: node,
+                                      onEditingComplete: () {
+                                        onComplete();
+                                        controller.text = '';
+                                      },
+                                      decoration: InputDecoration(
+                                        hintText: 'cuisine'.tr,
+                                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL), borderSide: BorderSide.none),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                displayStringForOption: (value) => cuisineController.cuisineModel.cuisines[value].name,
+                                onSelected: (int value) {
+                                  _c.text = '';
+                                  cuisineController.setSelectedCuisineIndex(value, true);
+                                  //_addons.removeAt(value);
+                                },
+                              ),
+
+                            SizedBox(height: cuisineController.selectedCuisines.length > 0 ? Dimensions.PADDING_SIZE_SMALL : 0),
+                            SizedBox(
+                              height: cuisineController.selectedCuisines.length > 0 ? 40 : 0,
+                              child: ListView.builder(
+                                itemCount: cuisineController.selectedCuisines.length,
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (context, index) {
+                                  return Container(
+                                    padding: EdgeInsets.only(left: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                                    margin: EdgeInsets.only(right: Dimensions.PADDING_SIZE_SMALL),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).primaryColor,
+                                      borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
+                                    ),
+                                    child: Row(children: [
+                                      Text(
+                                        cuisineController.cuisineModel.cuisines[cuisineController.selectedCuisines[index]].name,
+                                        style: robotoRegular.copyWith(color: Theme.of(context).cardColor),
+                                      ),
+                                      InkWell(
+                                        onTap: () => cuisineController.removeCuisine(index),
+                                        child: Padding(
+                                          padding: EdgeInsets.all(Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                                          child: Icon(Icons.close, size: 15, color: Theme.of(context).cardColor),
+                                        ),
+                                      ),
+                                    ]),
+                                  );
+                                },
+                              ),
+                            ),
+                          ]);
+                        }),
+
+
+                        SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
 
                         Row(children: [
                           Expanded(child: CustomTextField(
@@ -350,12 +447,25 @@ class _RestaurantRegistrationScreenState extends State<RestaurantRegistrationScr
                               showCustomSnackBar('password_should_be'.tr);
                             }else if(_password != _confirmPassword) {
                               showCustomSnackBar('confirm_password_does_not_matched'.tr);
-                            }else {
+                            }/*else if(Get.find<CuisineController>().cuisineIndex-1 == -1) {
+                              showCustomSnackBar('please_select_cuisine_for_the_restaurant'.tr);
+                            }*/else {
+
+                              List<String> cuisines = [];
+                              Get.find<CuisineController>().selectedCuisines.forEach((index) {
+                                cuisines.add(Get.find<CuisineController>().cuisineModel.cuisines[index].id.toString());
+                              });
+                              // String _cuisine = '';
+                              // for(int index=0; index<cuisines.length; index++) {
+                              //   _cuisine = _cuisine + '${index == 0 ? cuisines[index].id : ',${cuisines[index].id}'}';
+                              // }
+
                               authController.registerRestaurant(RestaurantBody(
                                 restaurantName: _name, restaurantAddress: _address, vat: _vat, minDeliveryTime: _minTime,
                                 maxDeliveryTime: _maxTime, lat: authController.restaurantLocation.latitude.toString(), email: _email,
                                 lng: authController.restaurantLocation.longitude.toString(), fName: _fName, lName: _lName, phone: _phone,
                                 password: _password, zoneId: authController.zoneList[authController.selectedZoneIndex].id.toString(),
+                                cuisineId: cuisines,
                               ));
                             }
                           },

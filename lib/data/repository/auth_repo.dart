@@ -201,4 +201,8 @@ class AuthRepo {
     return apiClient.postMultipartData(AppConstants.DM_REGISTER_URI, deliveryManBody.toJson(), multiParts);
   }
 
+  Future<Response> getVehicleList() async {
+    return await apiClient.getData(AppConstants.VEHICLES_URI);
+  }
+
 }

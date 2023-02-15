@@ -1,5 +1,6 @@
 import 'package:efood_multivendor/controller/auth_controller.dart';
 import 'package:efood_multivendor/controller/chat_controller.dart';
+import 'package:efood_multivendor/controller/localization_controller.dart';
 import 'package:efood_multivendor/controller/splash_controller.dart';
 import 'package:efood_multivendor/controller/user_controller.dart';
 import 'package:efood_multivendor/data/model/body/notification_body.dart';
@@ -158,7 +159,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                               showCustomSnackBar('${_type.tr} ${'not_found'.tr}');
                             }
                           },
-                          highlightColor: Theme.of(context).backgroundColor.withOpacity(0.1),
+                          highlightColor: Theme.of(context).colorScheme.background.withOpacity(0.1),
                           radius: Dimensions.RADIUS_SMALL,
                           child: Stack(children: [
                             Padding(
@@ -186,7 +187,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                             ),
 
                             Positioned(
-                              right: 5,bottom: 5,
+                              right: Get.find<LocalizationController>().isLtr ? 5 : null, bottom: 5, left: Get.find<LocalizationController>().isLtr ? null : 5,
                               child: Text(
                                 DateConverter.localDateToIsoStringAMPM(DateConverter.dateTimeStringToDate(
                                     _conversation.conversations[index].lastMessageTime)),
@@ -197,7 +198,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
                             GetBuilder<UserController>(builder: (userController) {
                               return (userController.userInfoModel != null && userController.userInfoModel.userInfo != null
                                   && _conversation.conversations[index].lastMessage.senderId != userController.userInfoModel.userInfo.id
-                                  && _conversation.conversations[index].unreadMessageCount > 0) ? Positioned(right: 5,top: 5,
+                                  && _conversation.conversations[index].unreadMessageCount > 0) ? Positioned(right: Get.find<LocalizationController>().isLtr ? 5 : null,
+                                  top: 5, left: Get.find<LocalizationController>().isLtr ? null : 5,
                                 child: Container(
                                   padding: const EdgeInsets.all(Dimensions.PADDING_SIZE_EXTRA_SMALL),
                                   decoration: BoxDecoration(color: Theme.of(context).primaryColor, shape: BoxShape.circle),

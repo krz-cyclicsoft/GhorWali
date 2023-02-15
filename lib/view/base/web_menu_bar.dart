@@ -45,14 +45,14 @@ class WebMenuBar extends StatelessWidget implements PreferredSizeWidget {
                   Icon(
                     locationController.getUserAddress().addressType == 'home' ? Icons.home_filled
                         : locationController.getUserAddress().addressType == 'office' ? Icons.work : Icons.location_on,
-                    size: 20, color: Theme.of(context).textTheme.bodyText1.color,
+                    size: 20, color: Theme.of(context).textTheme.bodyLarge.color,
                   ),
                   SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
                   Flexible(
                     child: Text(
                       locationController.getUserAddress().address,
                       style: robotoRegular.copyWith(
-                        color: Theme.of(context).textTheme.bodyText1.color, fontSize: Dimensions.fontSizeSmall,
+                        color: Theme.of(context).textTheme.bodyLarge.color, fontSize: Dimensions.fontSizeSmall,
                       ),
                       maxLines: 1, overflow: TextOverflow.ellipsis,
                     ),

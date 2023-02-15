@@ -7,6 +7,7 @@ import 'package:efood_multivendor/controller/cart_controller.dart';
 import 'package:efood_multivendor/controller/category_controller.dart';
 import 'package:efood_multivendor/controller/chat_controller.dart';
 import 'package:efood_multivendor/controller/coupon_controller.dart';
+import 'package:efood_multivendor/controller/cuisine_controller.dart';
 import 'package:efood_multivendor/controller/localization_controller.dart';
 import 'package:efood_multivendor/controller/location_controller.dart';
 import 'package:efood_multivendor/controller/notification_controller.dart';
@@ -27,6 +28,7 @@ import 'package:efood_multivendor/data/repository/cart_repo.dart';
 import 'package:efood_multivendor/data/repository/category_repo.dart';
 import 'package:efood_multivendor/data/repository/chat_repo.dart';
 import 'package:efood_multivendor/data/repository/coupon_repo.dart';
+import 'package:efood_multivendor/data/repository/cuisine_repo.dart';
 import 'package:efood_multivendor/data/repository/language_repo.dart';
 import 'package:efood_multivendor/data/repository/location_repo.dart';
 import 'package:efood_multivendor/data/repository/notification_repo.dart';
@@ -72,6 +74,7 @@ Future<Map<String, Map<String, String>>> init() async {
   Get.lazyPut(() => CampaignRepo(apiClient: Get.find()));
   Get.lazyPut(() => WalletRepo(apiClient: Get.find()));
   Get.lazyPut(() => ChatRepo(apiClient: Get.find(), sharedPreferences: Get.find()));
+  Get.lazyPut(() => CuisineRepo(apiClient: Get.find()));
 
   // Controller
   Get.lazyPut(() => ThemeController(sharedPreferences: Get.find()));
@@ -94,6 +97,7 @@ Future<Map<String, Map<String, String>>> init() async {
   Get.lazyPut(() => CampaignController(campaignRepo: Get.find()));
   Get.lazyPut(() => WalletController(walletRepo: Get.find()));
   Get.lazyPut(() => ChatController(chatRepo: Get.find()));
+  Get.lazyPut(() => CuisineController(cuisineRepo: Get.find()));
 
   // Retrieving localized data
   Map<String, Map<String, String>> _languages = Map();

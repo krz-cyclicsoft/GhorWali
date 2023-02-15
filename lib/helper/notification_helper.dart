@@ -19,17 +19,17 @@ class NotificationHelper {
 
   static Future<void> initialize(FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin) async {
     var androidInitialize = new AndroidInitializationSettings('notification_icon');
-    var iOSInitialize = new IOSInitializationSettings();
+    var iOSInitialize = new DarwinInitializationSettings();
     var initializationsSettings = new InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
-    flutterLocalNotificationsPlugin.initialize(initializationsSettings, onSelectNotification: (String payload) async {
+    flutterLocalNotificationsPlugin.initialize(initializationsSettings, onDidReceiveNotificationResponse: (NotificationResponse response) async {
       try{
         NotificationBody _payload;
-        if(payload != null && payload.isNotEmpty) {
-          _payload = NotificationBody.fromJson(jsonDecode(payload));
+        if(response != null && response.payload.isNotEmpty) {
+          _payload = NotificationBody.fromJson(jsonDecode(response.payload));
           if(_payload.notificationType == NotificationType.order) {
             Get.toNamed(RouteHelper.getOrderDetailsRoute(int.parse(_payload.orderId.toString())));
           } else if(_payload.notificationType == NotificationType.general) {
-            Get.toNamed(RouteHelper.getNotificationRoute());
+            Get.toNamed(RouteHelper.getNotificationRoute(fromNotification: true));
           } else{
             Get.toNamed(RouteHelper.getChatRoute(notificationBody: _payload, conversationID: _payload.conversationId));
           }
@@ -86,7 +86,7 @@ class NotificationHelper {
             print('order call-------------');
             Get.toNamed(RouteHelper.getOrderDetailsRoute(int.parse(message.data['order_id'])));
           } else if(_notificationBody.notificationType == NotificationType.general) {
-            Get.toNamed(RouteHelper.getNotificationRoute());
+            Get.toNamed(RouteHelper.getNotificationRoute(fromNotification: true));
           } else{
             Get.toNamed(RouteHelper.getChatRoute(notificationBody: _notificationBody, conversationID: _notificationBody.conversationId));
           }
@@ -209,9 +209,9 @@ class NotificationHelper {
 Future<dynamic> myBackgroundMessageHandler(RemoteMessage message) async {
   print("onBackground: ${message.notification.title}/${message.notification.body}/${message.notification.titleLocKey}");
   // var androidInitialize = new AndroidInitializationSettings('notification_icon');
-  // var iOSInitialize = new IOSInitializationSettings();
+  // var iOSInitialize = new DarwinInitializationSettings();
   // var initializationsSettings = new InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
   // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   // flutterLocalNotificationsPlugin.initialize(initializationsSettings);
-  // NotificationHelper.showNotification(message, flutterLocalNotificationsPlugin, true);
+  // NotificationHelper.showNotification(message, flutterLocalNotificationsPlugin, false);
 }

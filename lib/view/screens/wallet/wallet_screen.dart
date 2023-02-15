@@ -113,11 +113,11 @@ class _WalletScreenState extends State<WalletScreen> {
 
                                         Text(
                                           userController.userInfoModel.loyaltyPoint == null ? '0' : userController.userInfoModel.loyaltyPoint.toString(),
-                                          style: robotoBold.copyWith(fontSize: Dimensions.fontSizeOverLarge, color: Theme.of(context).textTheme.bodyText1.color),
+                                          style: robotoBold.copyWith(fontSize: Dimensions.fontSizeOverLarge, color: Theme.of(context).textTheme.bodyLarge.color),
                                         ),
                                         Text(
                                           'loyalty_points'.tr + ' !',
-                                          style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).textTheme.bodyText1.color),
+                                          style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).textTheme.bodyLarge.color),
                                         ),
                                         SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
 
@@ -139,10 +139,10 @@ class _WalletScreenState extends State<WalletScreen> {
                                     children: [
                                       Text(
                                         'convert_to_currency'.tr , style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall,
-                                          color: widget.fromWallet ? Theme.of(context).cardColor : Theme.of(context).textTheme.bodyText1.color),
+                                          color: widget.fromWallet ? Theme.of(context).cardColor : Theme.of(context).textTheme.bodyLarge.color),
                                       ),
                                       Icon(Icons.keyboard_arrow_down_outlined,size: 16, color: widget.fromWallet ? Theme.of(context).cardColor
-                                          : Theme.of(context).textTheme.bodyText1.color)
+                                          : Theme.of(context).textTheme.bodyLarge.color)
                                     ],
                                   ),
                                 ),

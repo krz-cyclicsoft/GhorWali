@@ -26,7 +26,7 @@ class WebCampaignView extends StatelessWidget {
 
           Padding(
             padding: EdgeInsets.symmetric(vertical: Dimensions.PADDING_SIZE_SMALL),
-            child: Text('campaigns'.tr, style: robotoMedium.copyWith(fontSize: 24)),
+            child: Text('trending_food_offers'.tr, style: robotoMedium.copyWith(fontSize: 24)),
           ),
 
           campaignController.itemCampaignList != null ? GridView.builder(

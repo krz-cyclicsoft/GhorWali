@@ -6,6 +6,7 @@ import 'package:efood_multivendor/controller/cart_controller.dart';
 import 'package:efood_multivendor/controller/location_controller.dart';
 import 'package:efood_multivendor/controller/splash_controller.dart';
 import 'package:efood_multivendor/controller/wishlist_controller.dart';
+import 'package:efood_multivendor/data/model/body/deep_link_body.dart';
 import 'package:efood_multivendor/data/model/body/notification_body.dart';
 import 'package:efood_multivendor/helper/route_helper.dart';
 import 'package:efood_multivendor/util/app_constants.dart';
@@ -16,8 +17,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class SplashScreen extends StatefulWidget {
-  final NotificationBody body;
-  SplashScreen({@required this.body});
+  final NotificationBody notificationBody;
+  final DeepLinkBody linkBody;
+  SplashScreen({@required this.notificationBody, @required this.linkBody});
 
   @override
   _SplashScreenState createState() => _SplashScreenState();
@@ -81,15 +83,23 @@ class _SplashScreenState extends State<SplashScreen> {
           if(AppConstants.APP_VERSION < _minimumVersion || Get.find<SplashController>().configModel.maintenanceMode) {
             Get.offNamed(RouteHelper.getUpdateRoute(AppConstants.APP_VERSION < _minimumVersion));
           }else {
-            if(widget.body != null) {
-              if (widget.body.notificationType == NotificationType.order) {
-                Get.offNamed(RouteHelper.getOrderDetailsRoute(widget.body.orderId));
-              }else if(widget.body.notificationType == NotificationType.general){
-                Get.offNamed(RouteHelper.getNotificationRoute());
+            if(widget.notificationBody != null && widget.linkBody == null) {
+              if (widget.notificationBody.notificationType == NotificationType.order) {
+                Get.offNamed(RouteHelper.getOrderDetailsRoute(widget.notificationBody.orderId));
+              }else if(widget.notificationBody.notificationType == NotificationType.general){
+                Get.offNamed(RouteHelper.getNotificationRoute(fromNotification: true));
               }else {
-                Get.offNamed(RouteHelper.getChatRoute(notificationBody: widget.body, conversationID: widget.body.conversationId));
+                Get.offNamed(RouteHelper.getChatRoute(notificationBody: widget.notificationBody, conversationID: widget.notificationBody.conversationId));
               }
-            }else {
+            }/*else if(widget.linkBody != null && widget.notificationBody == null){
+              if(widget.linkBody.deepLinkType == DeepLinkType.restaurant){
+                Get.toNamed(RouteHelper.getRestaurantRoute(widget.linkBody.id));
+              }else if(widget.linkBody.deepLinkType == DeepLinkType.category){
+                Get.toNamed(RouteHelper.getCategoryProductRoute(widget.linkBody.id, widget.linkBody.name));
+              }else if(widget.linkBody.deepLinkType == DeepLinkType.cuisine){
+                Get.toNamed(RouteHelper.getCuisineRestaurantRoute(widget.linkBody.id));
+              }
+            }*/ else {
               if (Get.find<AuthController>().isLoggedIn()) {
                 Get.find<AuthController>().updateToken();
                 await Get.find<WishListController>().getWishList();
@@ -132,7 +142,7 @@ class _SplashScreenState extends State<SplashScreen> {
               /*SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
             Text(AppConstants.APP_NAME, style: robotoMedium.copyWith(fontSize: 25)),*/
             ],
-          ) : NoInternetScreen(child: SplashScreen(body: widget.body)),
+          ) : NoInternetScreen(child: SplashScreen(notificationBody: widget.notificationBody, linkBody: widget.linkBody)),
         );
       }),
     );

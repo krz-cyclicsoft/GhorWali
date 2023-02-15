@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:efood_multivendor/data/model/response/cuisine_model.dart';
+
 class RestaurantModel {
   int totalSize;
   String limit;
@@ -64,10 +66,13 @@ class Restaurant {
   List<Schedules> schedules;
   double minimumShippingCharge;
   double perKmShippingCharge;
+  double maximumShippingCharge;
   int vendorId;
   String restaurantModel;
   int restaurantStatus;
   RestaurantSubscription restaurantSubscription;
+  List<Cuisines> cuisineNames;
+  List<int> cuisineIds;
 
   Restaurant(
       {this.id,
@@ -101,10 +106,13 @@ class Restaurant {
         this.schedules,
         this.minimumShippingCharge,
         this.perKmShippingCharge,
+        this.maximumShippingCharge,
         this.vendorId,
         this.restaurantModel,
         this.restaurantStatus,
         this.restaurantSubscription,
+        this.cuisineNames,
+        this.cuisineIds,
       });
 
   Restaurant.fromJson(Map<String, dynamic> json) {
@@ -144,10 +152,24 @@ class Restaurant {
     }
     minimumShippingCharge = json['minimum_shipping_charge'] != null ? json['minimum_shipping_charge'].toDouble() : 0.0;
     perKmShippingCharge = json['per_km_shipping_charge'] != null ? json['per_km_shipping_charge'].toDouble() : 0.0;
+    maximumShippingCharge = json['maximum_shipping_charge'] != null ? json['maximum_shipping_charge'].toDouble() : 0.0;
     vendorId = json['vendor_id'];
     restaurantModel = json['restaurant_model'];
     restaurantStatus = json['restaurant_status'];
     restaurantSubscription = json['restaurant_sub'] != null ? RestaurantSubscription.fromJson(json['restaurant_sub']) : null;
+    if(json['cuisine'] != null){
+      cuisineNames = [];
+      json['cuisine'].forEach((v){
+        cuisineNames.add(Cuisines.fromJson(v));
+      });
+    }
+    // if(json['cuisine_ids'] != null){
+    //   cuisineIds = [];
+    //   json['cuisine_ids'].forEach((v){
+    //     cuisineIds.add(v);
+    //   });
+    // }
+
   }
 
   Map<String, dynamic> toJson() {
@@ -188,6 +210,7 @@ class Restaurant {
     data['minimum_shipping_charge'] = this.minimumShippingCharge;
     data['per_km_shipping_charge'] = this.perKmShippingCharge;
     data['vendor_id'] = this.vendorId;
+    data['cuisine'] = this.cuisineNames.toList();
     return data;
   }
 }

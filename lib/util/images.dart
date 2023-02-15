@@ -3,6 +3,7 @@ class Images {
   static const String logo_name = 'assets/image/logo_name.png';
   static const String placeholder = 'assets/image/placeholder.png';
   static const String arabic = 'assets/image/arabic.png';
+  static const String spanish = 'assets/image/spanish.png';
   static const String call = 'assets/image/call.png';
   static const String checked = 'assets/image/checked.png';
   static const String english = 'assets/image/english.png';
@@ -77,4 +78,5 @@ class Images {
   static const String shipping_policy = 'assets/image/shipping_policy.png';
   static const String cancelation = 'assets/image/cancelation.png';
   static const String refund = 'assets/image/refund.png';
+  static const String notification_placeholder = 'assets/image/notification_placeholder.jpg';
 }

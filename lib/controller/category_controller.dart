@@ -141,7 +141,6 @@ class CategoryController extends GetxController implements GetxService {
   }
 
   void searchData(String query, String categoryID, String type) async {
-    print('-------${(_isRestaurant && query.isNotEmpty && query != _restResultText) || (!_isRestaurant && query.isNotEmpty && query != _prodResultText)}');
     if((_isRestaurant && query.isNotEmpty && query != _restResultText) || (!_isRestaurant && query.isNotEmpty && query != _prodResultText)) {
       _searchText = query;
       _type = type;

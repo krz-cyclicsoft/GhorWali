@@ -107,7 +107,7 @@ class _PickMapScreenState extends State<PickMapScreen> {
                       ),
                     ),
                     SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
-                    Icon(Icons.search, size: 25, color: Theme.of(context).textTheme.bodyText1.color),
+                    Icon(Icons.search, size: 25, color: Theme.of(context).textTheme.bodyLarge.color),
                   ]),
                 ),
               ),

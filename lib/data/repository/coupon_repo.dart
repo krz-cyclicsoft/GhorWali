@@ -7,8 +7,8 @@ class CouponRepo {
   final ApiClient apiClient;
   CouponRepo({@required this.apiClient});
 
-  Future<Response> getCouponList() async {
-    return await apiClient.getData(AppConstants.COUPON_URI);
+  Future<Response> getCouponList(int customerId) async {
+    return await apiClient.getData('${AppConstants.COUPON_URI}?customer_id=$customerId');
   }
 
   Future<Response> applyCoupon(String couponCode, int restaurantID) async {

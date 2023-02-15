@@ -44,9 +44,9 @@ class _OrderSuccessfulScreenState extends State<OrderSuccessfulScreen> {
           total = ((orderController.trackModel.orderAmount / 100) * Get.find<SplashController>().configModel.loyaltyPointItemPurchasePoint);
           success = orderController.trackModel.paymentStatus == 'paid' || orderController.trackModel.paymentMethod == 'cash_on_delivery';
 
-          if (!success) {
+          if (!success && !Get.isDialogOpen) {
             Future.delayed(Duration(seconds: 1), () {
-              Get.dialog(PaymentFailedDialog(orderID: widget.orderID), barrierDismissible: false);
+              Get.dialog(PaymentFailedDialog(orderID: widget.orderID, orderAmount: total, maxCodOrderAmount: total), barrierDismissible: false);
             });
           }
         }

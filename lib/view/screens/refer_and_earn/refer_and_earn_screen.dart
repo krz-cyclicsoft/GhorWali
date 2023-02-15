@@ -1,6 +1,7 @@
 import 'package:efood_multivendor/controller/auth_controller.dart';
 import 'package:efood_multivendor/controller/splash_controller.dart';
 import 'package:efood_multivendor/controller/user_controller.dart';
+import 'package:efood_multivendor/helper/link_converter.dart';
 import 'package:efood_multivendor/helper/price_converter.dart';
 import 'package:efood_multivendor/helper/responsive_helper.dart';
 import 'package:efood_multivendor/util/dimensions.dart';
@@ -39,6 +40,8 @@ class _ReferAndEarnScreenState extends State<ReferAndEarnScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String initialLink = 'StackFood://stackfood.com/category-product?id=5&name=QnVyZ2Vy';
+    LinkConverter.convertDeepLink(initialLink);
     return Scaffold(
       appBar: CustomAppBar(title: 'refer'.tr),
       body: Center(

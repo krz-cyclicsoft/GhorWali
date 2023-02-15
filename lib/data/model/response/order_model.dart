@@ -72,6 +72,8 @@ class OrderModel {
   Restaurant restaurant;
   AddressModel deliveryAddress;
   Refund refund;
+  bool taxStatus;
+  String cancellationReason;
 
   OrderModel(
       {this.id,
@@ -111,6 +113,8 @@ class OrderModel {
         this.deliveryAddress,
         this.restaurant,
         this.refund,
+        this.taxStatus,
+        this.cancellationReason,
       });
 
   OrderModel.fromJson(Map<String, dynamic> json) {
@@ -157,6 +161,8 @@ class OrderModel {
         ? new AddressModel.fromJson(json['delivery_address'])
         : null;
     refund = json['refund'] != null ? new Refund.fromJson(json['refund']) : null;
+    taxStatus = json['tax_status'] == 'included' ? true : false;
+    cancellationReason = json['cancellation_reason'];
   }
 
   Map<String, dynamic> toJson() {

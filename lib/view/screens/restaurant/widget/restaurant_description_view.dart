@@ -18,10 +18,18 @@ class RestaurantDescriptionView extends StatelessWidget {
   final Restaurant restaurant;
   RestaurantDescriptionView({@required this.restaurant});
 
+
+
   @override
   Widget build(BuildContext context) {
+    // String cuisines = '';
     bool _isAvailable = Get.find<RestaurantController>().isRestaurantOpenNow(restaurant.active, restaurant.schedules);
     Color _textColor = ResponsiveHelper.isDesktop(context) ? Colors.white : null;
+
+    // restaurant.cuisineNames.forEach((cuisine) {
+    //   cuisines += '${cuisine.name.isNotEmpty ? restaurant.cuisineNames.indexOf(cuisine) == 0 ? '' :', ' : ''}${cuisine.name}';
+    // });
+    // print('-----------------> $cuisines');
     return Column(children: [
       Row(children: [
 
@@ -56,11 +64,19 @@ class RestaurantDescriptionView extends StatelessWidget {
             maxLines: 1, overflow: TextOverflow.ellipsis,
           ),
           SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+
+          // cuisines.isNotEmpty ? Text(
+          //   cuisines, maxLines: 2, overflow: TextOverflow.ellipsis,
+          //   style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
+          // ) : SizedBox(),
+          // SizedBox(height: cuisines.isNotEmpty ? ResponsiveHelper.isDesktop(context) ? Dimensions.PADDING_SIZE_EXTRA_SMALL : 0 : 0),
+
           Text(
             restaurant.address ?? '', maxLines: 1, overflow: TextOverflow.ellipsis,
             style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
           ),
           SizedBox(height: ResponsiveHelper.isDesktop(context) ? Dimensions.PADDING_SIZE_EXTRA_SMALL : 0),
+
           Row(children: [
             Text('minimum_order'.tr, style: robotoRegular.copyWith(
               fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).disabledColor,
@@ -71,6 +87,19 @@ class RestaurantDescriptionView extends StatelessWidget {
               style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).primaryColor),
             ),
           ]),
+
+          // cuisines.isNotEmpty ? Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          //   Text('cuisines'.tr +':', style: robotoRegular.copyWith(
+          //     fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).disabledColor,
+          //   )),
+          //   SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+          //   Flexible(
+          //     child: Text(
+          //       cuisines, maxLines: 2,overflow: TextOverflow.ellipsis,
+          //       style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).primaryColor),
+          //     ),
+          //   ),
+          // ]) : SizedBox(),
         ])),
         SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
 

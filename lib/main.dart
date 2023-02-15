@@ -6,6 +6,7 @@ import 'package:efood_multivendor/controller/localization_controller.dart';
 import 'package:efood_multivendor/controller/splash_controller.dart';
 import 'package:efood_multivendor/controller/theme_controller.dart';
 import 'package:efood_multivendor/controller/wishlist_controller.dart';
+import 'package:efood_multivendor/data/model/body/deep_link_body.dart';
 import 'package:efood_multivendor/data/model/body/notification_body.dart';
 import 'package:efood_multivendor/helper/notification_helper.dart';
 import 'package:efood_multivendor/helper/responsive_helper.dart';
@@ -32,6 +33,9 @@ Future<void> main() async {
   }
   setPathUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
+
+  DeepLinkBody _linkBody;
+
   if(GetPlatform.isWeb) {
     await Firebase.initializeApp(options: FirebaseOptions(
       apiKey: 'AIzaSyCeaw_gVN0iQwFHyuF8pQ6PbVDmSVQw8AY',
@@ -41,6 +45,14 @@ Future<void> main() async {
     ));
   }else {
     await Firebase.initializeApp();
+
+    // try {
+    //   String initialLink = await getInitialLink();
+    //   print('======initial link ===>  $initialLink');
+    //   if(initialLink != null) {
+    //     _linkBody = LinkConverter.convertDeepLink(initialLink);
+    //   }
+    // } on PlatformException {}
   }
 
   Map<String, Map<String, String>> _languages = await di.init();
@@ -58,20 +70,21 @@ Future<void> main() async {
   }catch(e) {}
 
   if (ResponsiveHelper.isWeb()) {
-    await FacebookAuth.instance.webInitialize(
+    await FacebookAuth.instance.webAndDesktopInitialize(
       appId: "452131619626499",
       cookie: true,
       xfbml: true,
       version: "v13.0",
     );
   }
-  runApp(MyApp(languages: _languages, body: _body));
+  runApp(MyApp(languages: _languages, body: _body, linkBody: _linkBody));
 }
 
 class MyApp extends StatelessWidget {
   final Map<String, Map<String, String>> languages;
   final NotificationBody body;
-  MyApp({@required this.languages, @required this.body});
+  final DeepLinkBody linkBody;
+  MyApp({@required this.languages, @required this.body, @required this.linkBody});
 
   void _route() {
     Get.find<SplashController>().getConfigData().then((bool isSuccess) async {
@@ -106,7 +119,7 @@ class MyApp extends StatelessWidget {
             locale: localizeController.locale,
             translations: Messages(languages: languages),
             fallbackLocale: Locale(AppConstants.languages[0].languageCode, AppConstants.languages[0].countryCode),
-            initialRoute: GetPlatform.isWeb ? RouteHelper.getInitialRoute() : RouteHelper.getSplashRoute(body),
+            initialRoute: GetPlatform.isWeb ? RouteHelper.getInitialRoute() : RouteHelper.getSplashRoute(body, linkBody),
             getPages: RouteHelper.routes,
             defaultTransition: Transition.topLevel,
             transitionDuration: Duration(milliseconds: 500),

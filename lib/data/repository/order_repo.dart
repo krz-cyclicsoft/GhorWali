@@ -25,8 +25,8 @@ class OrderRepo {
     return await apiClient.getData('${AppConstants.ORDER_DETAILS_URI}$orderID');
   }
 
-  Future<Response> cancelOrder(String orderID) async {
-    return await apiClient.postData(AppConstants.ORDER_CANCEL_URI, {'_method': 'put', 'order_id': orderID});
+  Future<Response> cancelOrder(String orderID, String reason) async {
+    return await apiClient.postData(AppConstants.ORDER_CANCEL_URI, {'_method': 'put', 'order_id': orderID, 'reason': reason});
   }
 
   Future<Response> trackOrder(String orderID) async {
@@ -55,8 +55,16 @@ class OrderRepo {
     return await apiClient.getData('${AppConstants.REFUND_REASONS_URI}');
   }
 
+  Future<Response> getCancelReasons() async {
+    return await apiClient.getData('${AppConstants.ORDER_CANCELLATION_URI}?offset=1&limit=30&type=customer');
+  }
+
   Future<Response> submitRefundRequest(Map<String, String> body, XFile data) async {
     return apiClient.postMultipartData(AppConstants.REFUND_REQUEST_URI, body,  [MultipartBody('image[]', data)]);
+  }
+
+  Future<Response> getExtraCharge(double distance) async {
+    return await apiClient.getData(AppConstants.VEHICLE_CHARGE_URI + '?distance=$distance');
   }
 
 }

@@ -40,7 +40,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _isLogin = Get.find<AuthController>().isLoggedIn();
 
     if(_isLogin){
-      Get.find<OrderController>().getRunningOrders(1);
+      Get.find<OrderController>().getRunningOrders(1, notify: false);
     }
 
     _pageIndex = widget.pageIndex;

@@ -4,6 +4,7 @@ import 'package:efood_multivendor/controller/splash_controller.dart';
 import 'package:efood_multivendor/data/api/api_checker.dart';
 import 'package:efood_multivendor/data/model/body/place_order_body.dart';
 import 'package:efood_multivendor/data/model/response/distance_model.dart';
+import 'package:efood_multivendor/data/model/response/order_cancellation_body.dart';
 import 'package:efood_multivendor/data/model/response/order_details_model.dart';
 import 'package:efood_multivendor/data/model/response/order_model.dart';
 import 'package:efood_multivendor/data/model/response/refund_model.dart';
@@ -25,7 +26,6 @@ class OrderController extends GetxController implements GetxService {
   OrderController({@required this.orderRepo});
 
   List<OrderModel> _runningOrderList;
-  // List<OrderModel> _reversRunningOrderList;
   List<OrderModel> _historyOrderList;
   List<OrderDetailsModel> _orderDetails;
   int _paymentMethodIndex = 0;
@@ -51,8 +51,6 @@ class OrderController extends GetxController implements GetxService {
   int _historyOffset = 1;
   int _addressIndex = 0;
   double _tips = 0.0;
-  // bool _isRunningOrderViewShow = true;
-  // int _runningOrderIndex = 0;
   int _deliverySelectIndex = 0;
   Timer _timer;
   List<String> _refundReasons;
@@ -60,9 +58,11 @@ class OrderController extends GetxController implements GetxService {
   XFile _refundImage;
   bool _showBottomSheet = true;
   bool _showOneOrder = true;
+  List<CancellationData> _orderCancelReasons;
+  String _cancelReason;
+  double _extraCharge;
 
   List<OrderModel> get runningOrderList => _runningOrderList;
-  // List<OrderModel> get reversRunningOrderList => _reversRunningOrderList;
   List<OrderModel> get historyOrderList => _historyOrderList;
   List<OrderDetailsModel> get orderDetails => _orderDetails;
   int get paymentMethodIndex => _paymentMethodIndex;
@@ -86,14 +86,48 @@ class OrderController extends GetxController implements GetxService {
   int get historyOffset => _historyOffset;
   int get addressIndex => _addressIndex;
   double get tips => _tips;
-  // bool get isRunningOrderViewShow => _isRunningOrderViewShow;
-  // int get runningOrderIndex => _runningOrderIndex;
   int get deliverySelectIndex => _deliverySelectIndex;
   int get selectedReasonIndex => _selectedReasonIndex;
   XFile get refundImage => _refundImage;
   List<String> get refundReasons => _refundReasons;
   bool get showBottomSheet => _showBottomSheet;
   bool get showOneOrder => _showOneOrder;
+  List<CancellationData> get orderCancelReasons => _orderCancelReasons;
+  String get cancelReason => _cancelReason;
+  double get extraCharge => _extraCharge;
+
+  void setOrderCancelReason(String reason){
+    _cancelReason = reason;
+    update();
+  }
+
+  Future<double> getExtraCharge(double distance) async {
+    _extraCharge = null;
+    Response response = await orderRepo.getExtraCharge(distance);
+    if (response.statusCode == 200) {
+      _extraCharge = double.parse(response.body.toString());
+    } else {
+      _extraCharge = 0;
+    }
+    return _extraCharge;
+  }
+
+  Future<void> getOrderCancelReasons()async {
+    Response response = await orderRepo.getCancelReasons();
+    if (response.statusCode == 200) {
+      OrderCancellationBody orderCancellationBody = OrderCancellationBody.fromJson(response.body);
+      _orderCancelReasons = [];
+      if(orderCancellationBody != null){
+        orderCancellationBody.reasons.forEach((element) {
+          _orderCancelReasons.add(element);
+        });
+      }
+
+    }else{
+      ApiChecker.checkApi(response);
+    }
+    update();
+  }
 
   void callTrackOrderApi({@required OrderModel orderModel, @required String orderId}){
     if(orderModel.orderStatus != 'delivered' && orderModel.orderStatus != 'failed' && orderModel.orderStatus != 'canceled') {
@@ -325,7 +359,6 @@ class OrderController extends GetxController implements GetxService {
   }
 
   Future<ResponseModel> trackOrder(String orderID, OrderModel orderModel, bool fromTracking) async {
-    print(orderModel == null);
     _trackModel = null;
     _responseModel = null;
     if(!fromTracking) {
@@ -369,19 +402,18 @@ class OrderController extends GetxController implements GetxService {
     return _responseModel;
   }
 
-  Future<void> placeOrder(PlaceOrderBody placeOrderBody, Function callback, double amount) async {
+  Future<void> placeOrder(PlaceOrderBody placeOrderBody, Function callback, double amount, double maximumCodOrderAmount) async {
     _isLoading = true;
     update();
-    print('order body: ${placeOrderBody.toJson()}');
     Response response = await orderRepo.placeOrder(placeOrderBody);
     _isLoading = false;
     if (response.statusCode == 200) {
       String message = response.body['message'];
       String orderID = response.body['order_id'].toString();
-      callback(true, message, orderID, amount);
+      callback(true, message, orderID, amount, maximumCodOrderAmount);
       print('-------- Order placed successfully $orderID ----------');
     } else {
-      callback(false, response.statusText, '-1', amount);
+      callback(false, response.statusText, '-1', amount, maximumCodOrderAmount);
     }
     update();
   }
@@ -406,13 +438,15 @@ class OrderController extends GetxController implements GetxService {
     update();
   }
 
-  void cancelOrder(int orderID) async {
+  Future<bool> cancelOrder(int orderID, String cancelReason) async {
+    bool success = false;
     _isLoading = true;
     update();
-    Response response = await orderRepo.cancelOrder(orderID.toString());
+    Response response = await orderRepo.cancelOrder(orderID.toString(), cancelReason);
     _isLoading = false;
     Get.back();
     if (response.statusCode == 200) {
+      success = true;
       OrderModel orderModel;
       for(OrderModel order in _runningOrderList) {
         if(order.id == orderID) {
@@ -424,10 +458,10 @@ class OrderController extends GetxController implements GetxService {
       _showCancelled = true;
       showCustomSnackBar(response.body['message'], isError: false);
     } else {
-      print(response.statusText);
       ApiChecker.checkApi(response);
     }
     update();
+    return success;
   }
 
   void setOrderType(String type, {bool notify = true}) {
@@ -534,7 +568,7 @@ class OrderController extends GetxController implements GetxService {
     Response response = await orderRepo.switchToCOD(orderID);
     bool _isSuccess;
     if (response.statusCode == 200) {
-      Get.offAllNamed(RouteHelper.getInitialRoute());
+      await Get.offAllNamed(RouteHelper.getInitialRoute());
       showCustomSnackBar(response.body['message'], isError: false);
       _isSuccess = true;
     } else {
@@ -562,6 +596,8 @@ class OrderController extends GetxController implements GetxService {
         originLatLng.latitude, originLatLng.longitude, destinationLatLng.latitude, destinationLatLng.longitude,
       ) / 1000;
     }
+    await getExtraCharge(_distance);
+
     update();
     return _distance;
   }

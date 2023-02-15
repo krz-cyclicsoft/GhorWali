@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:efood_multivendor/controller/auth_controller.dart';
 import 'package:efood_multivendor/controller/coupon_controller.dart';
+import 'package:efood_multivendor/controller/localization_controller.dart';
 import 'package:efood_multivendor/controller/splash_controller.dart';
 import 'package:efood_multivendor/helper/price_converter.dart';
 import 'package:efood_multivendor/helper/responsive_helper.dart';
@@ -71,15 +74,18 @@ class _CouponScreenState extends State<CouponScreen> {
 
                     ClipRRect(
                       borderRadius: BorderRadius.circular(Dimensions.RADIUS_SMALL),
-                      child: Image.asset(
-                        Images.coupon_bg,
-                        height: ResponsiveHelper.isMobilePhone() ? 120 : 140, width: MediaQuery.of(context).size.width,
-                        color: Theme.of(context).primaryColor, fit: BoxFit.cover,
+                      child: Transform.rotate(
+                        angle: Get.find<LocalizationController>().isLtr ? 0 : pi ,
+                        child: Image.asset(
+                          Images.coupon_bg,
+                          height: ResponsiveHelper.isMobilePhone() ? 130 : 140, width: MediaQuery.of(context).size.width,
+                          color: Theme.of(context).primaryColor, fit: BoxFit.cover,
+                        ),
                       ),
                     ),
 
                     Container(
-                      height: ResponsiveHelper.isMobilePhone() ? 120 : 140,
+                      height: ResponsiveHelper.isMobilePhone() ? 130 : 140,
                       alignment: Alignment.center,
                       child: Row(children: [
 
@@ -119,19 +125,25 @@ class _CouponScreenState extends State<CouponScreen> {
                               ),
                             ]),
 
-                            Row(children: [
+                            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                               Text(
                                 '${'type'.tr}:',
                                 style: robotoRegular.copyWith(color: Theme.of(context).cardColor, fontSize: Dimensions.fontSizeSmall),
                                 maxLines: 1, overflow: TextOverflow.ellipsis,
                               ),
                               SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                              Flexible(child: Text(
+                              couponController.couponList[index].restaurant == null ? Flexible(child: Text(
                                 couponController.couponList[index].couponType.tr + '${couponController.couponList[index].couponType
                                     == 'restaurant_wise' ? ' (${couponController.couponList[index].data})' : ''}',
                                 style: robotoMedium.copyWith(color: Theme.of(context).cardColor, fontSize: Dimensions.fontSizeSmall),
-                                maxLines: 1, overflow: TextOverflow.ellipsis,
-                              )),
+                                maxLines: 2, overflow: TextOverflow.ellipsis,
+                              )) : SizedBox(),
+
+                              couponController.couponList[index].restaurant != null ? Flexible(child: Text(
+                                couponController.couponList[index].couponType.tr + ' (${couponController.couponList[index].restaurant.name})',
+                                style: robotoMedium.copyWith(color: Theme.of(context).cardColor, fontSize: Dimensions.fontSizeSmall),
+                                maxLines: 2, overflow: TextOverflow.ellipsis,
+                              )) : SizedBox(),
                             ]),
 
                             Row(children: [

@@ -16,18 +16,25 @@ class ZoneData {
   int status;
   double minimumShippingCharge;
   double perKmShippingCharge;
+  double maxCodOrderAmount;
+  double maximumShippingCharge;
 
-  ZoneData(
-      {this.id,
-        this.status,
-        this.minimumShippingCharge,
-        this.perKmShippingCharge});
+  ZoneData({
+    this.id,
+    this.status,
+    this.minimumShippingCharge,
+    this.perKmShippingCharge,
+    this.maxCodOrderAmount,
+    this.maximumShippingCharge,
+  });
 
   ZoneData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     status = json['status'];
     minimumShippingCharge = json['minimum_shipping_charge'] != null ? json['minimum_shipping_charge'].toDouble() : null;
     perKmShippingCharge = json['per_km_shipping_charge'] != null ? json['per_km_shipping_charge'].toDouble() : null;
+    maxCodOrderAmount = json['max_cod_order_amount'] != null ? json['max_cod_order_amount'].toDouble() : null;
+    maximumShippingCharge = json['maximum_shipping_charge'] != null ? json['maximum_shipping_charge'].toDouble() : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -36,6 +43,8 @@ class ZoneData {
     data['status'] = this.status;
     data['minimum_shipping_charge'] = this.minimumShippingCharge;
     data['per_km_shipping_charge'] = this.perKmShippingCharge;
+    data['max_cod_order_amount'] = this.maxCodOrderAmount;
+    data['maximum_shipping_charge'] = this.maximumShippingCharge;
     return data;
   }
 }

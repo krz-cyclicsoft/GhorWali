@@ -13,7 +13,8 @@ import 'package:get/get.dart';
 
 class PaymentScreen extends StatefulWidget {
   final OrderModel orderModel;
-  PaymentScreen({@required this.orderModel});
+  final double maximumCodOrderAmount;
+  PaymentScreen({@required this.orderModel, @required this.maximumCodOrderAmount});
 
   @override
   _PaymentScreenState createState() => _PaymentScreenState();
@@ -35,7 +36,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   void _initData() async {
-    browser = MyInAppBrowser(orderID: widget.orderModel.id.toString(), orderAmount: widget.orderModel.orderAmount);
+    browser = MyInAppBrowser(orderID: widget.orderModel.id.toString(), orderAmount: widget.orderModel.orderAmount, maxCodOrderAmount: widget.maximumCodOrderAmount);
 
     if (Platform.isAndroid) {
       await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
@@ -101,7 +102,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   Future<bool> _exitApp() async {
-    return Get.dialog(PaymentFailedDialog(orderID: widget.orderModel.id.toString()));
+    return Get.dialog(PaymentFailedDialog(orderID: widget.orderModel.id.toString(), orderAmount: widget.orderModel.orderAmount, maxCodOrderAmount: widget.maximumCodOrderAmount));
   }
 
 }
@@ -109,7 +110,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
 class MyInAppBrowser extends InAppBrowser {
   final String orderID;
   final double orderAmount;
-  MyInAppBrowser({@required this.orderID, @required this.orderAmount, int windowId, UnmodifiableListView<UserScript> initialUserScripts})
+  final double maxCodOrderAmount;
+  MyInAppBrowser({@required this.orderID, @required this.orderAmount, @required this.maxCodOrderAmount, int windowId, UnmodifiableListView<UserScript> initialUserScripts})
       : super(windowId: windowId, initialUserScripts: initialUserScripts);
 
   bool _canRedirect = true;
@@ -149,7 +151,7 @@ class MyInAppBrowser extends InAppBrowser {
   @override
   void onExit() {
     if(_canRedirect) {
-      Get.dialog(PaymentFailedDialog(orderID: orderID));
+      Get.dialog(PaymentFailedDialog(orderID: orderID, orderAmount: orderAmount, maxCodOrderAmount: maxCodOrderAmount));
     }
     print("\n\nBrowser closed!\n\n");
   }
